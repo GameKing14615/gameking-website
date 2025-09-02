@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gameking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<script src="{{ url_for('static', filename='js/tictactoe.js') }}"></script>
+
+
+<body>
+    <!-- The background container for p5.js to attach the canvas dynamically. -->
+    <div id="backgroundCanvas"></div>
+
+    <header>
+        <div class="header-left">
+            <a href="/">
+                <img src="{{ url_for('static', filename='images/gameking_logo_1.png') }}" alt="Gameking Logo" class="header-logo">
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="projects-section">
+            <h2>
+            <img src="{{ url_for('static', filename='images/idea_lab_logo.png') }}" alt="FUNZIES" />
+            </h2>
+            <div class="project-grid">
+                <div class="project-row">
+                    <a href="{{ url_for('tictactoe') }}">
+                        <div class="project-circle" id="project1">
+                            <img src="{{ url_for('static', filename='images/cross.jpg') }}" alt="Tic-Tac-Toe" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto;" />
+                        </div>
+                    </a>
+                    <div class="project-circle" id="project2"></div>
+                    <div class="project-circle" id="project3"></div>
+                    <div class="project-circle" id="project4"></div>
+                </div>
+                <div class="project-row">
+                    <div class="project-circle" id="project5"></div>
+                    <div class="project-circle" id="project6"></div>
+                    <div class="project-circle" id="project7"></div>
+                </div>
+                <div id="tictactoe-modal" class="modal-content" style="display: none;">
+                  <div class="modal-header"> MEGA TIC-TAC-TOE
+                    <span class="close">&times;</span>
+                  </div>
+                  <div class="modal-body" id="tictactoe-game">
+                    <!-- The game will be loaded here -->
+                  </div>
+                </div>
+                <!-- This div adds extra scrollability, as per your request -->
+                <div style="height: 1000px;"></div>
+            </div>
+        </section>
+    </main>
+
+
+    <footer>
+        <div class="contacts-section">
+            <h3>Contacts:</h3>
+            <p>Email: gameking@email.com</p>
+            <p>Phone: 123-456-7890</p>
+        </div>
+    </footer>
+
+    <!-- p5.js library must be loaded first -->
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+    
+    <!-- This script passes the correct image URL from Flask to JavaScript -->
+    <script>
+        const PIXEL_BG_PATH = "{{ url_for('static', filename='images/pixelbg.png') }}";
+    </script>
+
+    <script>
+        const man_waving = "{{ url_for('static', filename='images/pixil-gif-drawing.gif') }}";
+    </script>
+
+    <script>
+        const Sheep = "{{ url_for('static', filename='images/sheep_1.gif') }}";
+    </script>
+
+    
+    <!-- Your custom background animation script -->
+    <script src="{{ url_for('static', filename='js/background.js') }}"></script>
+    
+    <!-- Your main site script -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+
