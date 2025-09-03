@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic-Tac-Toe</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style_tictactoe.css') }}">
+    <link rel="stylesheet" href="../static/style_tictactoe.css">
 </head>
 <body>
     <div id="backgroundCanvas"></div>
@@ -12,7 +12,7 @@
     <header>
     <div class="header-left">
         <a href="/">
-            <img src="{{ url_for('static', filename='images/gameking_logo_1.png') }}" alt="Gameking Logo" class="header-logo">
+            <img src="../static/images/gameking_logo_1.png" alt="Gameking Logo" class="header-logo">
         </a>
     </div>
     </header>
@@ -82,20 +82,20 @@
     
     <!-- This script passes the correct image URL from Flask to JavaScript -->
     <script>
-        const PIXEL_BG_PATH = "{{ url_for('static', filename='images/pixelbg.png') }}";
+        const PIXEL_BG_PATH = "../static/images/pixelbg.png";
     </script>
 
     <script>
-        const Sheep = "{{ url_for('static', filename='images/sheep_1.gif') }}";
+        const Sheep = "../static/images/sheep_1.gif";
     </script>
 
     
     <!-- Your custom background animation script -->
-    <script src="{{ url_for('static', filename='js/tkbackground.js') }}"></script>
+    <script src="../static/js/tkbackground.js"></script>
     
     <!-- Your main site script -->
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/tictactoe.js') }}"></script>
+    <script src="../static/script.js"></script>
+    <script src="../static/js/tictactoe.js"></script>
 </body>
 </html>
 
