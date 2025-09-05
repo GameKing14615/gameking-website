@@ -5,19 +5,19 @@ let sheep1 = [];
 
 function preload() {
     // Load your background image using the globally defined path from index.html
-    mountainSkyBG = loadImage(PIXEL_BG_PATH);
-    cloudImgs.push(loadImage('/static/images/cloud_1.png'));
-    cloudImgs.push(loadImage('/static/images/cloud_2.png'));
-    cloudImgs.push(loadImage('/static/images/cloud_2.png'));
-    cloudImgs.push(loadImage('/static/images/cloud_3.png'));
-    cloudImgs.push(loadImage('/static/images/cloud_3.png'));
-    cloudImgs.push(loadImage('/static/images/cloud_4.png'));
-    cloudImgs.push(loadImage('/static/images/cloud_4.png'));
-    sheep1.push(loadImage(Sheep));
-    sheep1.push(loadImage(Sheep));
-    sheep1.push(loadImage(Sheep));
-    sheep1.push(loadImage(Sheep));
-    sheep1.push(loadImage(Sheep));
+    mountainSkyBG = loadImage('./images/pixelbg.png');
+    cloudImgs.push(loadImage('./images/cloud_1.png'));
+    cloudImgs.push(loadImage('./images/cloud_2.png'));
+    cloudImgs.push(loadImage('./images/cloud_2.png'));
+    cloudImgs.push(loadImage('./images/cloud_3.png'));
+    cloudImgs.push(loadImage('./images/cloud_3.png'));
+    cloudImgs.push(loadImage('./images/cloud_4.png'));
+    cloudImgs.push(loadImage('./images/cloud_4.png'));
+    sheep1.push(loadImage('./images/sheep_1.gif'));
+    sheep1.push(loadImage('./images/sheep_1.gif'));
+    sheep1.push(loadImage('./images/sheep_1.gif'));
+    sheep1.push(loadImage('./images/sheep_1.gif'));
+    sheep1.push(loadImage('./images/sheep_1.gif'));
 }
 
 // p5.js setup function: runs once when the sketch starts
