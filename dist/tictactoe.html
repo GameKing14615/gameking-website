@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="style_tictactoe.css">
+</head>
+<body>
+    <div id="backgroundCanvas"></div>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+    <header>
+    <div class="header-left">
+        <a href="/">
+        <img src="./images/gameking_logo_1.png" alt="Gameking Logo" class="header-logo">
+        </a>
+    </div>
+    </header>
+    <div class="game-container">
+        <div class="close-button" onclick="window.location.href='/'">X</div>
+        <!-- Back button, hidden on menu, shown on board/settings -->
+        <button id="ttt-back-btn" class="ttt-back-btn" style="display:none;">&#8592; Back</button>
+            <h1>TIC-TAC-TOE </h1>
+            <!-- Beautiful Menu -->
+            <div id="ttt-menu" class="ttt-menu">
+                <div id="main-menu">
+                    <button class="ttt-menu-btn" id="play-btn">Play</button>
+                    <button class="ttt-menu-btn" id="multiplayer-btn">Multiplayer</button>
+                    <button class="ttt-menu-btn" id="settings-btn">Settings</button>
+                </div>
+                <div id="multiplayer-options" style="display:none;">
+                    <button class="ttt-menu-btn" id="host-btn">Host</button>
+                    <button class="ttt-menu-btn" id="join-btn">Join</button>
+                    <!-- Host code display -->
+                    <div id="host-code-section" style="display:none;">
+                        <h3>Share this code with your friend:</h3>
+                        <div id="host-code" style="font-size:2em;letter-spacing:2px;"></div>
+                    </div>
+                    <!-- Join code entry -->
+                    <div id="join-code-section" style="display:none;">
+                        <h3>Enter code to join:</h3>
+                        <input type="text" id="join-code-input" maxlength="6" style="font-size:1.2em;text-align:center;" />
+                        <button class="ttt-menu-btn" id="join-game-btn">Join Game</button>
+                        <div id="join-error" style="color:red;"></div>
+                    </div>
+                    <button class="ttt-menu-btn" id="mp-back-btn">&#8592; Back</button>
+                </div>
+            </div>
+        <!-- Game board, hidden until menu selection -->
+        <div id="board-section" style="display:none;">
+            <div id="board" class="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+            <div id="status"></div>
+            <button id="reset-button">Reset Game</button>
+        </div>
+        <!-- Settings section, hidden by default -->
+        <div id="settings-section" style="display:none;">
+            <h2>Settings</h2>
+            <p>Coming soon...</p>
+        </div>
+    </div>
+    
+     
+    <footer>
+        <div class="contacts-section">
+            <h3>Contacts:</h3>
+            <p>Email: gameking@email.com</p>
+            <p>Phone: 123-456-7890</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+    
+    <!-- This script passes the correct image URL from Flask to JavaScript -->
+    <script>
+    const PIXEL_BG_PATH = "./images/pixelbg.png";
+    </script>
+
+    <script>
+    const Sheep = "./images/sheep_1.gif";
+    </script>
+
+    
+    <!-- Your custom background animation script -->
+    <script src="./js/tkbackground.js"></script>
+    
+    <!-- Your main site script -->
+    <script src="./script.js"></script>
+    <script src="./js/tictactoe.js"></script>
+</body>
+</html>
+

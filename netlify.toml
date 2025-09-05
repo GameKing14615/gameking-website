@@ -1,0 +1,14 @@
+# Netlify configuration for GameKing website
+[build]
+  publish = "dist"
+  command = ""
+
+[[redirects]]
+  from = "/tictactoe"
+  to = "/tictactoe.html"
+  status = 200
+
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
