@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Before GTA 6</title>
+
+    <!-- Global styles (optional) -->
+    <link rel="stylesheet" href="../static/style.css">
+
+    <!-- Page-specific styling -->
+    <link rel="stylesheet" href="../static/gtastyle.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar" aria-label="Primary">
+            <a href="/" class="logo" title="Go to home">
+                <img src="../static/images/gameking_logo_1.png" alt="GameKing" />
+            </a>
+            <button class="active" title="Popular" data-tab="popular">⭐ Popular</button>
+            <button title="Latest" data-tab="latest">📄 Latest</button>
+            <button title="Trending" data-tab="trending">🔥 Trending</button>
+            <button class="button-primary" id="createBtn" type="button">➕ Create</button>
+        </aside>
+
+        <header class="topbar">
+            <div class="brand">
+                <img src="../static/images/beforegta6.jpg" alt="Before GTA 6" />
+                <span>BEFORE GTA 6</span>
+            </div>
+
+            <div class="search">
+                <span class="search-icon">🔍</span>
+                <input type="search" id="searchInput" placeholder="Search" />
+            </div>
+
+            <div class="actions">
+                <button class="button-secondary" id="loginBtn">LOG IN</button>
+                <button class="button-primary" id="signUpBtn">SIGN UP</button>
+            </div>
+        </header>
+
+        <main class="content" id="mainContent">
+            <nav class="nav-row" aria-label="Primary navigation">
+                <div class="nav-links">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle active" data-tab="popular">POPULAR ▾</button>
+                        <div class="dropdown-menu">
+                            <button class="active" data-tab="popular">POPULAR</button>
+                            <button data-tab="latest">LATEST POSTS</button>
+                            <button data-tab="trending">TRENDING</button>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" data-tab="category">CATEGORY ▾</button>
+                        <div class="dropdown-menu">
+                            <button data-tab="science">Science</button>
+                            <button data-tab="movie">Movie & TV</button>
+                            <button data-tab="entertainment">Entertainment</button>
+                            <button data-tab="news">NEWS</button>
+                            <button data-tab="youtube">Youtube</button>
+                            <button data-tab="gaming">Gaming</button>
+                            <button data-tab="medicine">Medicine</button>
+                            <button data-tab="politics">Politics</button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="grid" id="postGrid">
+                <!-- Posts injected by JS -->
+            </div>
+
+            <div class="scroll-hint">Infinite Scroll ⟲</div>
+        </main>
+
+        <aside class="sidebar-right" id="sidebarRight">
+            <div class="panel">
+                <h3>Trending Memes</h3>
+                <div class="chip">#FlyingCars</div>
+                <div class="chip">#AI_Toasters</div>
+                <div class="chip">#VR_Gaming</div>
+                <div class="chip">#VO_Comment</div>
+            </div>
+
+            <div class="panel">
+                <h3>Leaderboard</h3>
+                <div class="leaderboard">
+                    <div class="leader"><span>1. <strong>MemeLord99</strong></span><span class="score">2298</span></div>
+                    <div class="leader"><span>2. <strong>Gamer_Life</strong></span><span class="score">263</span></div>
+                    <div class="leader"><span>3. <strong>VirnDamin</strong></span><span class="score">790</span></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Community Poll</h3>
+                <p style="margin: 0 0 12px; color: rgba(233, 238, 247, 0.6);">Which will come first?</p>
+                <div class="poll" id="pollChoices">
+                    <button data-value="gta6">GTA 6</button>
+                    <button data-value="fusion">Commercial Fusion Energy</button>
+                </div>
+                <div class="results" id="pollResults">No votes yet.</div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="modal" id="createModal" aria-hidden="true">
+        <div class="modal-backdrop" data-close="true"></div>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="createModalTitle">
+            <header class="modal-header">
+                <h2 id="createModalTitle">Create a Post</h2>
+                <button class="modal-close" type="button" aria-label="Close">✕</button>
+            </header>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="postTitle">Title</label>
+                    <div class="title-row">
+                        <span class="title-chip fixed">WE GOT</span>
+                        <input id="postTitle" maxlength="250" placeholder="YOUR TITLE HERE" />
+                        <span class="title-chip fixed">BEFORE GTA 6</span>
+                    </div>
+                    <div class="help-text"><span id="titleCount">0</span>/250</div>
+                </div>
+                <div class="form-group">
+                    <label for="postDescription">Description</label>
+                    <textarea id="postDescription" rows="4" placeholder="Write a short description..." maxlength="250"></textarea>
+                    <div class="help-text"><span id="descCount">0</span>/250</div>
+                </div>
+                <div class="form-group">
+                    <label>Categories (max 3)</label>
+                    <div class="tag-list" id="tagList"></div>
+                    <div class="help-text">Select up to 3 tags.</div>
+                </div>
+            </div>
+            <footer class="modal-footer">
+                <button type="button" class="button-secondary" id="cancelCreate">Cancel</button>
+                <button type="button" class="button-primary" id="submitCreate">Create</button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Action completed</div>
+
+    <script>
+        const posts = [
+            {
+                title: 'We got flying taxis before GTA 6',
+                image: '../static/images/beforegta6.jpg',
+                author: '@Gamer_Life',
+                time: '2h ago',
+                upvotes: '12k',
+                comments: '1.5k',
+                badge: 'News',
+            },
+            {
+                title: 'We got AI-powered toasters before GTA 6',
+                image: '../static/images/beforegta6.jpg',
+                author: '@Tech_Junkie',
+                time: '5h ago',
+                upvotes: '8k',
+                comments: '900',
+                badge: 'Gadgets',
+            },
+            {
+                title: 'We got fully immersive VR before GTA 6',
+                image: '../static/images/beforegta6.jpg',
+                author: '@Future_Now',
+                time: '1d ago',
+                upvotes: '20k',
+                comments: '3.2k',
+                badge: 'Tech',
+            },
+            {
+                title: 'We got neural city planners before GTA 6',
+                image: '../static/images/beforegta6.jpg',
+                author: '@CyberSec',
+                time: '3d ago',
+                upvotes: '15k',
+                comments: '2.1k',
+                badge: 'Future',
+            }
+        ];
+
+        const postGrid = document.getElementById('postGrid');
+        const toast = document.getElementById('toast');
+        const navButtons = document.querySelectorAll('.nav-links button');
+        const sidebarButtons = document.querySelectorAll('.sidebar button[data-tab]');
+        const pollResults = document.getElementById('pollResults');
+        const pollChoices = document.getElementById('pollChoices');
+
+        const createBtn = document.getElementById('createBtn');
+        const createModal = document.getElementById('createModal');
+        const postTitleInput = document.getElementById('postTitle');
+        const postDescInput = document.getElementById('postDescription');
+        const tagList = document.getElementById('tagList');
+        const titleCount = document.getElementById('titleCount');
+        const cancelCreateBtn = document.getElementById('cancelCreate');
+        const submitCreateBtn = document.getElementById('submitCreate');
+        const modalCloseBtn = document.querySelector('.modal-close');
+
+        const categories = ['Science', 'Movie & TV', 'Entertainment', 'NEWS', 'Youtube', 'Gaming', 'Medicine', 'Politics'];
+
+        function renderTagOptions() {
+            tagList.innerHTML = '';
+            categories.forEach((cat) => {
+                const id = `tag-${cat.replace(/\s+/g, '-').toLowerCase()}`;
+                const label = document.createElement('label');
+                label.className = 'tag-item';
+                label.innerHTML = `
+                    <input type="checkbox" value="${cat}" id="${id}" />
+                    <span>${cat}</span>
+                `;
+                tagList.appendChild(label);
+            });
+
+            // Enforce a max of 3 selected categories by reverting the latest toggle.
+            tagList.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                checkbox.addEventListener('change', () => {
+                    const checked = tagList.querySelectorAll('input[type="checkbox"]:checked');
+                    if (checked.length > 3) {
+                        checkbox.checked = false;
+                        showToast('You can select up to 3 tags.');
+                    }
+                });
+            });
+        }
+
+        function getSelectedTags() {
+            return Array.from(tagList.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value);
+        }
+
+        function openCreateModal() {
+            renderTagOptions();
+            postTitleInput.value = '';
+            postDescInput.value = '';
+            titleCount.textContent = '0';
+            createModal.classList.add('open');
+            createModal.setAttribute('aria-hidden', 'false');
+            postTitleInput.focus();
+        }
+
+        function closeCreateModal() {
+            createModal.classList.remove('open');
+            createModal.setAttribute('aria-hidden', 'true');
+        }
+
+        // Validate user input, then prepend a new post so it appears at the top immediately.
+        function handleCreateSubmit() {
+            const rawTitle = postTitleInput.value.trim();
+            const title = `WE GOT ${rawTitle || '...'} BEFORE GTA 6`;
+            const description = postDescInput.value.trim();
+            const tags = getSelectedTags();
+
+            if (!rawTitle) {
+                showToast('Title is required.');
+                postTitleInput.focus();
+                return;
+            }
+
+            if (rawTitle.length > 250) {
+                showToast('Title must be 250 characters or fewer.');
+                return;
+            }
+
+            if (tags.length === 0) {
+                showToast('Select at least one category.');
+                return;
+            }
+
+            const newPost = {
+                title,
+                description,
+                image: '../static/images/beforegta6.jpg',
+                author: '@You',
+                time: 'Just now',
+                upvotes: '0',
+                comments: '0',
+                badge: tags[0],
+                tags,
+            };
+
+            posts.unshift(newPost);
+            renderPosts();
+            closeCreateModal();
+            showToast('Created new post.');
+        }
+
+        createBtn.addEventListener('click', openCreateModal);
+        cancelCreateBtn.addEventListener('click', closeCreateModal);
+        modalCloseBtn.addEventListener('click', closeCreateModal);
+        submitCreateBtn.addEventListener('click', handleCreateSubmit);
+        createModal.addEventListener('click', (event) => {
+            if (event.target === createModal || event.target.dataset.close === 'true') {
+                closeCreateModal();
+            }
+        });
+
+        postTitleInput.addEventListener('input', () => {
+            titleCount.textContent = String(postTitleInput.value.length);
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && createModal.classList.contains('open')) {
+                closeCreateModal();
+            }
+        });
+
+        // Build each card with DOM nodes to safely compose optional sections and actions.
+        function buildPostCard(post) {
+            const card = document.createElement('article');
+            card.className = 'card';
+
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.innerHTML = `
+                <h3>${post.title}</h3>
+                <span class="badge">${post.badge}</span>
+            `;
+
+            const image = document.createElement('div');
+            image.className = 'card-image';
+            image.style.backgroundImage = `url('${post.image}')`;
+
+            const meta = document.createElement('div');
+            meta.className = 'card-meta';
+            meta.innerHTML = `
+                <div class="avatar">${post.author.slice(1, 3).toUpperCase()}</div>
+                <div class="meta-text">
+                    <span>${post.author}</span>
+                    <span class="time">${post.time} • ${post.upvotes} Upvotes • ${post.comments} Comments</span>
+                </div>
+            `;
+
+            const actions = document.createElement('div');
+            actions.className = 'card-actions';
+            actions.innerHTML = `
+                <button class="share">Share</button>
+                <button class="save">Save</button>
+            `;
+
+            actions.querySelector('.share').addEventListener('click', () => showToast('Shared!'));
+            actions.querySelector('.save').addEventListener('click', () => showToast('Saved!'));
+
+            card.append(header);
+
+            if (post.description) {
+                const desc = document.createElement('p');
+                desc.className = 'card-desc';
+                desc.textContent = post.description;
+                card.append(desc);
+            }
+
+            card.append(image, meta);
+
+            if (post.tags && post.tags.length) {
+                const tagsEl = document.createElement('div');
+                tagsEl.className = 'card-tags';
+                tagsEl.innerHTML = post.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+                card.append(tagsEl);
+            }
+
+            card.append(actions);
+            return card;
+        }
+
+        function renderPosts() {
+            postGrid.innerHTML = '';
+            posts.forEach(post => postGrid.appendChild(buildPostCard(post)));
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function activateTab(name) {
+            const titleMap = {
+                latest: 'Latest Posts',
+                popular: 'Popular',
+                trending: 'Trending'
+            };
+
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            if (dropdownToggle) {
+                dropdownToggle.dataset.tab = name;
+                dropdownToggle.textContent = `${(titleMap[name] || 'Popular').toUpperCase()} ▾`;
+            }
+
+            navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
+            sidebarButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
+
+            // Normalize shorthand metrics (k/m) so tabs can sort numerically.
+            const parseMetric = (value) => {
+                const match = String(value).trim().match(/^([\d.]+)\s*([kKmM])?$/);
+                if (!match) return 0;
+                const num = parseFloat(match[1]);
+                const unit = match[2] ? match[2].toLowerCase() : '';
+                if (unit === 'k') return num * 1000;
+                if (unit === 'm') return num * 1000000;
+                return num;
+            };
+
+            // Convert labels like "2h ago" / "1d ago" into hours for "latest" ordering.
+            const parseTimeAgo = (label) => {
+                const match = String(label).trim().match(/^(\d+)([hd])\s*ago$/i);
+                if (!match) return 0;
+                const num = Number(match[1]);
+                return match[2].toLowerCase() === 'd' ? num * 24 : num;
+            };
+
+            // Sort in-place based on the selected tab and re-render the list.
+            if (name === 'popular') {
+                posts.sort((a, b) => parseMetric(b.upvotes) - parseMetric(a.upvotes));
+            } else if (name === 'latest') {
+                posts.sort((a, b) => parseTimeAgo(a.time) - parseTimeAgo(b.time));
+            } else if (name === 'trending') {
+                posts.sort((a, b) => {
+                    const scoreA = parseMetric(a.upvotes) + parseMetric(a.comments);
+                    const scoreB = parseMetric(b.upvotes) + parseMetric(b.comments);
+                    return scoreB - scoreA;
+                });
+            }
+
+            renderPosts();
+            showToast(`${titleMap[name] || 'Popular'} loaded`);
+        }
+
+        function setupTabListeners() {
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+            });
+            sidebarButtons.forEach(btn => {
+                btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                showToast(`Searching for "${event.target.value}"`);
+            }
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            showToast('Login feature coming soon!');
+        });
+
+        document.getElementById('signUpBtn').addEventListener('click', () => {
+            showToast('Signup feature coming soon!');
+        });
+
+        pollChoices.addEventListener('click', (event) => {
+            const button = event.target.closest('button');
+            if (!button) return;
+            pollChoices.querySelectorAll('button').forEach(el => el.classList.remove('active'));
+            button.classList.add('active');
+            pollResults.textContent = `You voted for "${button.textContent.trim()}".`;
+        });
+
+        setupTabListeners();
+        activateTab('popular');
+
+        // Simulate infinite scroll by adding more cards when reaching bottom
+        let loading = false;
+        document.querySelector('.content').addEventListener('scroll', () => {
+            const container = document.querySelector('.content');
+            if (loading) return;
+            if (container.scrollHeight - container.scrollTop - container.clientHeight < 120) {
+                loading = true;
+                // Duplicate a small sample set to imitate pagination latency and new results.
+                setTimeout(() => {
+                    posts.push(...posts.slice(0, 2).map(post => ({ ...post })));
+                    renderPosts();
+                    loading = false;
+                }, 900);
+            }
+        });
+    </script>
+</body>
+</html>
+

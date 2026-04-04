@@ -1,274 +1,583 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // DOM elements
-    const menu = document.getElementById('ttt-menu');
-    const mainMenu = document.getElementById('main-menu');
-    const multiplayerOptions = document.getElementById('multiplayer-options');
-    const boardSection = document.getElementById('board-section');
-    const settingsSection = document.getElementById('settings-section');
-    const playBtn = document.getElementById('play-btn');
-    const multiplayerBtn = document.getElementById('multiplayer-btn');
-    const settingsBtn = document.getElementById('settings-btn');
-    const backBtn = document.getElementById('ttt-back-btn');
-    const mpBackBtn = document.getElementById('mp-back-btn');
-    const hostBtn = document.getElementById('host-btn');
-    const joinBtn = document.getElementById('join-btn');
-    const hostCodeSection = document.getElementById('host-code-section');
-    const hostCodeDiv = document.getElementById('host-code');
-    const joinCodeSection = document.getElementById('join-code-section');
-    const joinCodeInput = document.getElementById('join-code-input');
-    const joinGameBtn = document.getElementById('join-game-btn');
-    const joinError = document.getElementById('join-error');
+// Tic-Tac-Toe Game - Complete Implementation
+// Handles both single-player and multiplayer modes
 
-    // Helper: generate random 6-character code
-    function generateCode() {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let code = '';
-        for (let i = 0; i < 6; i++) {
-            code += chars.charAt(Math.floor(Math.random() * chars.length));
+class TicTacToeGame {
+    constructor() {
+        // DOM Elements
+        this.menu = document.getElementById('ttt-menu');
+        this.mainMenu = document.getElementById('main-menu');
+        this.singlePlayerOptions = document.getElementById('singleplayer-options');
+        this.multiplayerOptions = document.getElementById('multiplayer-options');
+        this.boardSection = document.getElementById('board-section');
+        this.settingsSection = document.getElementById('settings-section');
+        
+        this.cells = document.querySelectorAll('.cell');
+        this.status = document.getElementById('status');
+        this.resetButton = document.getElementById('reset-button');
+
+        this.matchmakingStatus = document.getElementById('matchmaking-status');
+        this.waitEstimate = document.getElementById('wait-estimate');
+        this.onlineDot = document.getElementById('online-dot');
+        this.onlineCount = document.getElementById('online-count');
+        
+        // Game State
+        this.gameState = ['', '', '', '', '', '', '', '', ''];
+        this.currentPlayer = 'X';
+        this.gameActive = true;
+        this.isMultiplayer = false;
+        this.playerSymbol = '';
+        this.humanSymbol = '';
+        this.computerSymbol = '';
+        this.gameRoomCode = '';
+        this.pollingInterval = null;
+        this.matchmakingInterval = null;
+        this.onlineCountInterval = null;
+        this.computerMoveTimeout = null;
+        this.queueStartTime = 0;
+        this.clientId = this.getOrCreateClientId();
+        
+        this.init();
+    }
+    
+    init() {
+        this.attachEventListeners();
+        this.showMainMenu();
+        this.startOnlineCountPolling();
+    }
+    
+    attachEventListeners() {
+        // Main Menu Buttons
+        document.getElementById('play-btn').addEventListener('click', () => this.showSinglePlayerMenu());
+        document.getElementById('multiplayer-btn').addEventListener('click', () => this.showMultiplayerMenu());
+        document.getElementById('settings-btn').addEventListener('click', () => this.showSettingsMenu());
+
+        // Single Player Options
+        document.getElementById('sp-symbol-x-btn').addEventListener('click', () => this.startSinglePlayer('X'));
+        document.getElementById('sp-symbol-o-btn').addEventListener('click', () => this.startSinglePlayer('O'));
+        document.getElementById('sp-symbol-random-btn').addEventListener('click', () => this.startSinglePlayer('RANDOM'));
+        document.getElementById('sp-back-btn').addEventListener('click', () => this.showMainMenu());
+        
+        // Back Buttons
+        document.getElementById('ttt-back-btn').addEventListener('click', () => this.goBack());
+        document.getElementById('mp-back-btn').addEventListener('click', () => this.showMainMenu());
+        
+        // Board Interactions
+        this.cells.forEach(cell => {
+            cell.addEventListener('click', (e) => this.handleCellClick(e));
+        });
+        this.resetButton.addEventListener('click', () => this.resetGame());
+    }
+    
+    // === Navigation ===
+    showMainMenu() {
+        this.stopComputerTurn();
+        this.leaveQueue();
+        this.stopMatchmakingPolling();
+        this.mainMenu.style.display = '';
+        this.singlePlayerOptions.style.display = 'none';
+        this.multiplayerOptions.style.display = 'none';
+        this.boardSection.style.display = 'none';
+        this.settingsSection.style.display = 'none';
+        document.getElementById('ttt-back-btn').style.display = 'none';
+    }
+
+    showSinglePlayerMenu() {
+        this.stopGamePolling();
+        this.stopMatchmakingPolling();
+        this.stopComputerTurn();
+        this.leaveQueue();
+        this.isMultiplayer = false;
+        this.gameRoomCode = '';
+        this.playerSymbol = '';
+
+        this.mainMenu.style.display = 'none';
+        this.singlePlayerOptions.style.display = '';
+        this.multiplayerOptions.style.display = 'none';
+        this.boardSection.style.display = 'none';
+        this.settingsSection.style.display = 'none';
+        document.getElementById('ttt-back-btn').style.display = '';
+    }
+    
+    showMultiplayerMenu() {
+        this.mainMenu.style.display = 'none';
+        this.singlePlayerOptions.style.display = 'none';
+        this.multiplayerOptions.style.display = '';
+        this.boardSection.style.display = 'none';
+        this.settingsSection.style.display = 'none';
+        document.getElementById('ttt-back-btn').style.display = '';
+        this.beginMatchmaking();
+    }
+    
+    showSettingsMenu() {
+        this.mainMenu.style.display = 'none';
+        this.singlePlayerOptions.style.display = 'none';
+        this.multiplayerOptions.style.display = 'none';
+        this.boardSection.style.display = 'none';
+        this.settingsSection.style.display = '';
+        document.getElementById('ttt-back-btn').style.display = '';
+    }
+    
+    showBoard() {
+        this.mainMenu.style.display = 'none';
+        this.singlePlayerOptions.style.display = 'none';
+        this.multiplayerOptions.style.display = 'none';
+        this.boardSection.style.display = '';
+        this.settingsSection.style.display = 'none';
+        document.getElementById('ttt-back-btn').style.display = '';
+    }
+    
+    goBack() {
+        this.stopGamePolling();
+        this.stopMatchmakingPolling();
+        this.stopComputerTurn();
+        this.leaveQueue();
+        this.isMultiplayer = false;
+        this.humanSymbol = '';
+        this.computerSymbol = '';
+        this.showMainMenu();
+    }
+    
+    // === Single Player ===
+    startSinglePlayer(selectedSymbol) {
+        this.stopGamePolling();
+        this.stopMatchmakingPolling();
+        this.stopComputerTurn();
+        this.leaveQueue();
+        this.isMultiplayer = false;
+        this.gameRoomCode = '';
+        this.playerSymbol = '';
+
+        const finalSymbol = selectedSymbol === 'RANDOM'
+            ? (Math.random() < 0.5 ? 'X' : 'O')
+            : selectedSymbol;
+
+        this.humanSymbol = finalSymbol;
+        this.computerSymbol = this.humanSymbol === 'X' ? 'O' : 'X';
+
+        this.clearGameState();
+        this.showBoard();
+
+        if (this.currentPlayer === this.computerSymbol) {
+            this.scheduleComputerMove();
         }
-        return code;
     }
 
-    // Navigation logic
-    function showMainMenu() {
-        mainMenu.style.display = '';
-        multiplayerOptions.style.display = 'none';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = 'none';
-    }
-    function showMultiplayerMenu() {
-        mainMenu.style.display = 'none';
-        multiplayerOptions.style.display = '';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = '';
-        hostCodeSection.style.display = 'none';
-        joinCodeSection.style.display = 'none';
-        joinError.textContent = '';
-    }
-    function showSettingsMenu() {
-        mainMenu.style.display = 'none';
-        multiplayerOptions.style.display = 'none';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = '';
-        backBtn.style.display = '';
-    }
-    function showBoard() {
-        mainMenu.style.display = 'none';
-        multiplayerOptions.style.display = 'none';
-        boardSection.style.display = '';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = '';
+    // === Multiplayer Matchmaking ===
+    beginMatchmaking() {
+        this.stopGamePolling();
+        this.isMultiplayer = true;
+        this.playerSymbol = '';
+        this.gameRoomCode = '';
+        this.queueStartTime = Date.now();
+        this.matchmakingStatus.textContent = 'Joining queue...';
+        this.waitEstimate.textContent = 'Checking activity...';
+
+        fetch('/game/matchmaking/join', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client_id: this.clientId })
+        })
+            .then(r => r.json())
+            .then(data => this.handleMatchmakingState(data))
+            .catch(e => {
+                console.error('Matchmaking join error:', e);
+                this.matchmakingStatus.textContent = 'Unable to reach matchmaking service.';
+                this.waitEstimate.textContent = 'Try again in a moment.';
+            });
+
+        this.startMatchmakingPolling();
     }
 
-    // Main menu buttons
-    playBtn.addEventListener('click', showBoard);
-    multiplayerBtn.addEventListener('click', showMultiplayerMenu);
-    settingsBtn.addEventListener('click', showSettingsMenu);
+    startMatchmakingPolling() {
+        this.stopMatchmakingPolling();
 
-    // Back button (top left)
-    backBtn.addEventListener('click', function() {
-        // Always return to main menu and show main menu buttons
-        mainMenu.style.display = '';
-        multiplayerOptions.style.display = 'none';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = 'none';
-        menu.style.display = '';
-    });
-    // Multiplayer back button
-    mpBackBtn.addEventListener('click', showMainMenu);
+        this.matchmakingInterval = setInterval(() => {
+            fetch(`/game/matchmaking/status?client_id=${encodeURIComponent(this.clientId)}`)
+                .then(r => r.json())
+                .then(data => this.handleMatchmakingState(data))
+                .catch(e => console.error('Matchmaking status error:', e));
+        }, 1000);
+    }
 
-    // Multiplayer options
-    hostBtn.addEventListener('click', function() {
-        hostCodeSection.style.display = '';
-        joinCodeSection.style.display = 'none';
-        hostCodeDiv.textContent = generateCode();
-        joinError.textContent = '';
-    });
-    joinBtn.addEventListener('click', function() {
-        hostCodeSection.style.display = 'none';
-        joinCodeSection.style.display = '';
-        joinCodeInput.value = '';
-        joinError.textContent = '';
-    });
+    stopMatchmakingPolling() {
+        if (this.matchmakingInterval) {
+            clearInterval(this.matchmakingInterval);
+            this.matchmakingInterval = null;
+        }
+    }
 
-    // Join game button (to be implemented with backend)
-    joinGameBtn.addEventListener('click', function() {
-        const code = joinCodeInput.value.trim().toUpperCase();
-        if (code.length !== 6) {
-            joinError.textContent = 'Please enter a valid 6-character code.';
+    handleMatchmakingState(data) {
+        if (!data || !data.success) return;
+
+        const waitingCount = Number(data.waiting_count || 0);
+        this.updateOnlineIndicator(waitingCount);
+
+        if (data.matched && data.room_code && data.player_symbol) {
+            this.stopMatchmakingPolling();
+            this.gameRoomCode = data.room_code;
+            this.playerSymbol = data.player_symbol;
+            this.clearGameState();
+            this.showBoard();
+            this.startPolling();
+            this.status.textContent = `Matched! You are ${this.playerSymbol}. ${this.currentPlayer === this.playerSymbol ? 'Your turn.' : 'Opponent starts.'}`;
             return;
         }
-        // TODO: Connect to backend to join game with code
-        joinError.textContent = 'Connecting...';
-        // On successful join, show game board
-        showBoard();
-    });
 
-    // Host code click to start game (demo)
-    hostCodeDiv.addEventListener('click', function() {
-        showBoard();
-    });
-
-    // On page load, show main menu
-    showMainMenu();
-});
-// Menu navigation logic for Tic-Tac-Toe
-document.addEventListener('DOMContentLoaded', function() {
-    const menu = document.getElementById('ttt-menu');
-    const boardSection = document.getElementById('board-section');
-    const settingsSection = document.getElementById('settings-section');
-    const playBtn = document.getElementById('play-btn');
-    const multiplayerBtn = document.getElementById('multiplayer-btn');
-    const settingsBtn = document.getElementById('settings-btn');
-    const backBtn = document.getElementById('ttt-back-btn');
-
-    function showBoard() {
-        menu.style.display = 'none';
-        boardSection.style.display = '';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = '';
+        const secondsWaiting = Math.floor((Date.now() - this.queueStartTime) / 1000);
+        this.matchmakingStatus.textContent = `Searching for opponent... (${secondsWaiting}s)`;
+        this.waitEstimate.textContent = this.getWaitEstimate(waitingCount);
     }
 
-    function showSettings() {
-        menu.style.display = 'none';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = '';
-        backBtn.style.display = '';
+    getWaitEstimate(waitingCount) {
+        if (waitingCount <= 0) return 'No one is waiting right now.';
+        if (waitingCount === 1) return 'One player is waiting. Match should start soon.';
+        return `${waitingCount} players are waiting. You should be matched quickly.`;
     }
 
-    function showMenu() {
-        menu.style.display = '';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = 'none';
+    leaveQueue() {
+        fetch('/game/matchmaking/leave', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client_id: this.clientId })
+        }).catch(e => console.error('Leave queue error:', e));
     }
-
-    const mainMenu = document.getElementById('main-menu');
-
-    playBtn.addEventListener('click', showBoard);
-    multiplayerBtn.addEventListener('click', function() {
-        mainMenu.style.display = 'none';
-        multiplayerOptions.style.display = '';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = 'none';
-    });
-    settingsBtn.addEventListener('click', function() {
-        mainMenu.style.display = 'none';
-        multiplayerOptions.style.display = 'none';
-        showSettings();
-    });
     
+    // === Game Logic ===
+    handleCellClick(e) {
+        if (!this.gameActive) return;
+        
+        const cell = e.target;
+        const index = parseInt(cell.dataset.index, 10);
+        
+        // Check if cell is empty
+        if (this.gameState[index] !== '') {
+            this.status.textContent = 'Cell already taken!';
+            return;
+        }
+        
+        // Multiplayer: check if it's your turn
+        if (this.isMultiplayer) {
+            if (this.currentPlayer !== this.playerSymbol) {
+                this.status.textContent = "Wait for your turn!";
+                return;
+            }
+            
+            // Send move to server
+            fetch('/game/make_move', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    room_code: this.gameRoomCode,
+                    position: index,
+                    player: this.playerSymbol
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    this.gameState = data.game_state.slice();
+                    this.currentPlayer = data.current_player;
+                    this.updateDisplay();
+                    this.checkGameEnd(data);
+                } else {
+                    this.status.textContent = 'Invalid move!';
+                }
+            })
+            .catch(e => console.error('Move error:', e));
+        } else {
+            // Single-player: block input while computer is thinking/playing.
+            if (!this.humanSymbol || this.currentPlayer !== this.humanSymbol) {
+                this.status.textContent = "Computer's turn!";
+                return;
+            }
 
-    backBtn.addEventListener('click', function() {
-        // Always return to main menu from any section
-        mainMenu.style.display = '';
-        multiplayerOptions.style.display = 'none';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = 'none';
-        showMainMenu();
-    });
-    // Multiplayer back button
-    mpBackBtn.addEventListener('click', function() {
-        multiplayerOptions.style.display = 'none';
-        mainMenu.style.display = '';
-        boardSection.style.display = 'none';
-        settingsSection.style.display = 'none';
-        backBtn.style.display = 'none';
-    });
-    // On page load, always start at menu
-    mainMenu.style.display = '';
-    multiplayerOptions.style.display = 'none';
-    showMenu();
-});
-document.addEventListener('DOMContentLoaded', function() {
-    const board = document.getElementById('board');
-    const cells = document.querySelectorAll('.cell');
-    const status = document.getElementById('status');
-    const resetButton = document.getElementById('reset-button');
-    let currentPlayer = 'X';
-    let gameActive = true;
-    let gameState = ['', '', '', '', '', '', '', '', ''];
-
-    // Add event listeners to the cells
-    cells.forEach(cell => cell.addEventListener('click', handleCellClick));
-
-    // Add event listener to the reset button
-    resetButton.addEventListener('click', resetGame);
-
-    // Update the status text
-    status.textContent = `It's ${currentPlayer}'s turn`;
-
-    function handleCellClick(event) {
-        const cell = event.target;
-        const index = cell.dataset.index;
-
-        // Check if the cell is empty
-        if (gameState[index] === '') {
-            // Update the game state
-            gameState[index] = currentPlayer;
-
-            // Update the cell text and color
-            cell.textContent = currentPlayer;
-            if (currentPlayer === 'X') {
-                cell.style.color = '#3498db'; // blue
+            this.gameState[index] = this.currentPlayer;
+            this.updateDisplay();
+            
+            if (this.checkForWin(this.currentPlayer)) {
+                this.status.textContent = 'You win!';
+                this.status.classList.add('win');
+                this.gameActive = false;
+            } else if (!this.gameState.includes('')) {
+                this.status.textContent = "It's a draw!";
+                this.gameActive = false;
             } else {
-                cell.style.color = '#e74c3c'; // red
+                this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+                this.updateStatus();
+                this.scheduleComputerMove();
             }
-
-            // Update the status text
-            status.textContent = `It's ${currentPlayer === 'X' ? 'O' : 'X'}'s turn`;
-
-            // Check for a win
-            checkForWin();
-
-            // Switch the current player
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
         }
     }
-
-    function checkForWin() {
-        const winningConditions = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
+    
+    checkGameEnd(data) {
+        if (data.winner) {
+            this.status.textContent = `Player ${data.winner} wins!`;
+            this.status.classList.add('win');
+            this.gameActive = false;
+        } else if (data.draw) {
+            this.status.textContent = "It's a draw!";
+            this.gameActive = false;
+        } else {
+            this.updateStatus();
+        }
+    }
+    
+    checkForWin(player) {
+        const conditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
         ];
+        
+        return conditions.some(cond => 
+            this.gameState[cond[0]] === player &&
+            this.gameState[cond[1]] === player &&
+            this.gameState[cond[2]] === player
+        );
+    }
+    
+    updateDisplay() {
+        this.cells.forEach((cell, index) => {
+            cell.textContent = this.gameState[index];
+            if (this.gameState[index] === 'X') {
+                cell.style.color = '#3498db';
+            } else if (this.gameState[index] === 'O') {
+                cell.style.color = '#e74c3c';
+            } else {
+                cell.style.color = '';
+            }
+        });
+        this.updateStatus();
+    }
+    
+    updateStatus() {
+        if (!this.gameActive) return;
 
-        for (let i = 0; i < winningConditions.length; i++) {
-            const condition = winningConditions[i];
-            if (gameState[condition[0]] === gameState[condition[1]] && gameState[condition[1]] === gameState[condition[2]] && gameState[condition[0]] !== '') {
-                status.textContent = `Player ${gameState[condition[0]]} wins!`;
-                gameActive = false;
+        if (this.isMultiplayer && this.playerSymbol) {
+            const turnText = this.currentPlayer === this.playerSymbol ? 'Your turn' : "Opponent's turn";
+            this.status.textContent = `You are ${this.playerSymbol}. ${turnText}`;
+            return;
+        }
+
+        if (!this.isMultiplayer && this.humanSymbol && this.computerSymbol) {
+            const turnText = this.currentPlayer === this.humanSymbol ? 'Your turn' : "Computer's turn";
+            this.status.textContent = `You are ${this.humanSymbol}. ${turnText}`;
+            return;
+        }
+
+        this.status.textContent = `It's ${this.currentPlayer}'s turn`;
+    }
+    
+    resetGame() {
+        if (this.isMultiplayer) {
+            fetch('/game/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ room_code: this.gameRoomCode })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    this.clearGameState();
+                }
+            })
+            .catch(e => console.error('Reset error:', e));
+        } else {
+            this.stopComputerTurn();
+            this.clearGameState();
+
+            if (this.humanSymbol && this.currentPlayer === this.computerSymbol) {
+                this.scheduleComputerMove();
             }
         }
     }
-
-    function resetGame() {
-        // Reset the game state
-        gameState = ['', '', '', '', '', '', '', '', ''];
-
-        // Reset the cell text and color
-        cells.forEach(cell => {
+    
+    clearGameState() {
+        this.stopComputerTurn();
+        this.gameState = ['', '', '', '', '', '', '', '', ''];
+        this.currentPlayer = 'X';
+        this.gameActive = true;
+        this.status.classList.remove('win');
+        this.cells.forEach(cell => {
             cell.textContent = '';
             cell.style.color = '';
         });
-
-        // Reset the status text
-        status.textContent = `It's X's turn`;
-
-        // Reset the current player
-        currentPlayer = 'X';
-
-        // Reset the game active flag
-        gameActive = true;
+        this.updateStatus();
     }
+
+    scheduleComputerMove() {
+        this.stopComputerTurn();
+
+        if (!this.gameActive || this.isMultiplayer || this.currentPlayer !== this.computerSymbol) {
+            return;
+        }
+
+        this.computerMoveTimeout = setTimeout(() => {
+            this.makeComputerMove();
+        }, 450);
+    }
+
+    stopComputerTurn() {
+        if (this.computerMoveTimeout) {
+            clearTimeout(this.computerMoveTimeout);
+            this.computerMoveTimeout = null;
+        }
+    }
+
+    makeComputerMove() {
+        if (!this.gameActive || this.isMultiplayer || this.currentPlayer !== this.computerSymbol) {
+            return;
+        }
+
+        const move = this.getBestComputerMove();
+        if (move < 0) return;
+
+        this.gameState[move] = this.computerSymbol;
+        this.updateDisplay();
+
+        if (this.checkForWin(this.computerSymbol)) {
+            this.status.textContent = 'Computer wins!';
+            this.status.classList.add('win');
+            this.gameActive = false;
+            return;
+        }
+
+        if (!this.gameState.includes('')) {
+            this.status.textContent = "It's a draw!";
+            this.gameActive = false;
+            return;
+        }
+
+        this.currentPlayer = this.humanSymbol;
+        this.updateStatus();
+    }
+
+    getBestComputerMove() {
+        const emptyIndices = this.gameState
+            .map((value, index) => (value === '' ? index : -1))
+            .filter(index => index >= 0);
+
+        if (!emptyIndices.length) return -1;
+
+        const winningMove = this.findWinningMove(this.computerSymbol);
+        if (winningMove >= 0) return winningMove;
+
+        const blockingMove = this.findWinningMove(this.humanSymbol);
+        if (blockingMove >= 0) return blockingMove;
+
+        if (this.gameState[4] === '') return 4;
+
+        const corners = [0, 2, 6, 8].filter(index => this.gameState[index] === '');
+        if (corners.length) return corners[Math.floor(Math.random() * corners.length)];
+
+        return emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+    }
+
+    findWinningMove(symbol) {
+        const conditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        for (const [a, b, c] of conditions) {
+            const line = [this.gameState[a], this.gameState[b], this.gameState[c]];
+            const symbolCount = line.filter(v => v === symbol).length;
+            const emptyCount = line.filter(v => v === '').length;
+
+            if (symbolCount === 2 && emptyCount === 1) {
+                if (this.gameState[a] === '') return a;
+                if (this.gameState[b] === '') return b;
+                return c;
+            }
+        }
+
+        return -1;
+    }
+    
+    // === Multiplayer Polling ===
+    startPolling() {
+        this.stopGamePolling();
+        
+        this.pollingInterval = setInterval(() => {
+            if (!this.isMultiplayer || !this.gameRoomCode) {
+                this.stopGamePolling();
+                return;
+            }
+            
+            fetch(`/game/get_state/${this.gameRoomCode}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        const stateChanged = JSON.stringify(this.gameState) !== JSON.stringify(data.game_state);
+                        this.gameState = data.game_state.slice();
+                        this.currentPlayer = data.current_player;
+                        this.gameActive = data.game_active;
+                        
+                        if (stateChanged) {
+                            this.updateDisplay();
+                            this.checkGameEnd(data);
+                        }
+                    }
+                })
+                .catch(e => console.error('Polling error:', e));
+        }, 300);
+    }
+
+    stopGamePolling() {
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+            this.pollingInterval = null;
+        }
+    }
+
+    startOnlineCountPolling() {
+        const fetchOnlineCount = () => {
+            fetch('/game/matchmaking/status')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        this.updateOnlineIndicator(Number(data.waiting_count || 0));
+                    }
+                })
+                .catch(e => console.error('Online count error:', e));
+        };
+
+        fetchOnlineCount();
+
+        this.onlineCountInterval = setInterval(() => {
+            fetchOnlineCount();
+        }, 2000);
+    }
+
+    updateOnlineIndicator(waitingCount) {
+        this.onlineCount.textContent = String(waitingCount);
+
+        if (waitingCount > 0) {
+            this.onlineDot.classList.remove('status-offline');
+            this.onlineDot.classList.add('status-online');
+        } else {
+            this.onlineDot.classList.remove('status-online');
+            this.onlineDot.classList.add('status-offline');
+        }
+    }
+
+    getOrCreateClientId() {
+        const key = 'ttt_client_id';
+        let clientId = localStorage.getItem(key);
+
+        if (!clientId) {
+            clientId = `client_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
+            localStorage.setItem(key, clientId);
+        }
+
+        return clientId;
+    }
+    
+    // === Utilities ===
+}
+
+// Initialize game when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    new TicTacToeGame();
 });

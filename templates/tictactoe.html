@@ -27,23 +27,28 @@
                     <button class="ttt-menu-btn" id="play-btn">Play</button>
                     <button class="ttt-menu-btn" id="multiplayer-btn">Multiplayer</button>
                     <button class="ttt-menu-btn" id="settings-btn">Settings</button>
+                    <div id="online-indicator" class="online-indicator" aria-live="polite">
+                        <span id="online-dot" class="status-dot status-offline"></span>
+                        <span id="online-count">0</span> player(s) waiting for multiplayer
+                    </div>
+                </div>
+                <div id="singleplayer-options" style="display:none;">
+                    <div class="singleplayer-panel">
+                        <h3>Choose your symbol</h3>
+                        <p>Computer will play automatically against you. 'X' goes first.</p>
+                    </div>
+                    <button class="ttt-menu-btn" id="sp-symbol-x-btn">Play as <span class="symbol-x">X</span></button>
+                    <button class="ttt-menu-btn" id="sp-symbol-o-btn">Play as <span class="symbol-o">O</span></button>
+                    <button class="ttt-menu-btn" id="sp-symbol-random-btn">Random</button>
+                    <button class="ttt-menu-btn" id="sp-back-btn">Back</button>
                 </div>
                 <div id="multiplayer-options" style="display:none;">
-                    <button class="ttt-menu-btn" id="host-btn">Host</button>
-                    <button class="ttt-menu-btn" id="join-btn">Join</button>
-                    <!-- Host code display -->
-                    <div id="host-code-section" style="display:none;">
-                        <h3>Share this code with your friend:</h3>
-                        <div id="host-code" style="font-size:2em;letter-spacing:2px;"></div>
+                    <div id="matchmaking-panel" class="matchmaking-panel">
+                        <h3>Finding an opponent...</h3>
+                        <p id="matchmaking-status">Joining queue...</p>
+                        <p id="wait-estimate" class="wait-estimate">Checking activity...</p>
                     </div>
-                    <!-- Join code entry -->
-                    <div id="join-code-section" style="display:none;">
-                        <h3>Enter code to join:</h3>
-                        <input type="text" id="join-code-input" maxlength="6" style="font-size:1.2em;text-align:center;" />
-                        <button class="ttt-menu-btn" id="join-game-btn">Join Game</button>
-                        <div id="join-error" style="color:red;"></div>
-                    </div>
-                    <button class="ttt-menu-btn" id="mp-back-btn">&#8592; Back</button>
+                    <button class="ttt-menu-btn" id="mp-back-btn">Cancel</button>
                 </div>
             </div>
         <!-- Game board, hidden until menu selection -->
