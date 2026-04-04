@@ -1,18 +1,14 @@
 # Netlify configuration for GameKing website
 [build]
-  publish = "."
+  publish = "dist"
+  command = "python netlify_build.py"
 
 [[redirects]]
   from = "/tictactoe"
-  to = "/templates/tictactoe.html"
+  to = "/tictactoe.html"
   status = 200
 
 [[redirects]]
   from = "/beforegta6"
-  to = "/templates/beforegta6.html"
-  status = 200
-
-[[redirects]]
-  from = "/"
-  to = "/templates/index.html"
+  to = "/beforegta6.html"
   status = 200
