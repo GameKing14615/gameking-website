@@ -6,7 +6,7 @@ DIST = ROOT / "dist"
 TEMPLATES = ROOT / "templates"
 STATIC = ROOT / "static"
 
-PAGES = ["index.html", "tictactoe.html", "beforegta6.html"]
+PAGES = ["index.html", "tictactoe.html", "beforegta6.html", "dashy.html"]
 
 
 def clean_dist() -> None:

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-labelledby="title">
+  <title id="title">Filter</title>
+  <defs>
+    <linearGradient id="bg" x1="24" y1="18" x2="168" y2="174" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="168" height="168" rx="48" fill="url(#bg)"/>
+  <path d="M48 58H144M48 96H144M48 134H144" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="82" cy="58" r="11" fill="#0284c7" stroke="#fff" stroke-width="8"/>
+  <circle cx="119" cy="96" r="11" fill="#0284c7" stroke="#fff" stroke-width="8"/>
+  <circle cx="72" cy="134" r="11" fill="#0284c7" stroke="#fff" stroke-width="8"/>
+</svg>

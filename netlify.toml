@@ -12,3 +12,8 @@
   from = "/beforegta6"
   to = "/beforegta6.html"
   status = 200
+
+[[redirects]]
+  from = "/dashy"
+  to = "/dashy.html"
+  status = 200
