@@ -1,0 +1,516 @@
+/* ==========================================================================
+   12. RESPONSIVE BREAKPOINTS & DYNAMIC SCALING
+   Ensures seamless scaling at 100% full screen, split screen, and mobile
+   ========================================================================== */
+
+/* Large screens / Full resolution adjustments */
+@media (min-width: 1600px) {
+  .main-content {
+    padding: 28px 40px 60px;
+  }
+  .metric-card strong {
+    font-size: 26px;
+  }
+}
+
+/* Laptop / Medium Desktop Breakpoint (<= 1200px) */
+@media (max-width: 1200px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .roster-studio.admin-mode {
+    grid-template-columns: 1fr;
+  }
+  .roster-planning {
+    order: 2;
+  }
+  .main-content {
+    padding: 22px 24px 40px;
+  }
+}
+
+/* Tablet Breakpoint (<= 960px) */
+@media (max-width: 960px) {
+  .topbar {
+    padding: 0 16px;
+  }
+  .menu-button {
+    display: inline-grid;
+    place-items: center;
+  }
+  .brand {
+    width: auto;
+    margin-right: auto;
+  }
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .sidebar.open {
+    transform: none;
+  }
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px 16px 40px;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .attendance-command {
+    grid-template-columns: 1fr;
+  }
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+  .staff-manager-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile Breakpoint (<= 640px) */
+@media (max-width: 640px) {
+  .topbar-actions {
+    gap: 6px;
+  }
+  .network-text {
+    display: none;
+  }
+  .network-badge {
+    padding: 6px;
+  }
+  .theme-toggle span:last-child {
+    display: none;
+  }
+  .admin-login-button {
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+  .page-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .page-heading h1 {
+    font-size: 22px;
+  }
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+  .attendance-login-card.authenticated .pin-actions {
+    grid-template-columns: 1fr;
+  }
+  .attendance-action {
+    min-height: 90px;
+    flex-direction: row;
+    gap: 12px;
+  }
+  .calendar-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .calendar-actions {
+    align-self: flex-end;
+  }
+  .nepali-calendar-panel {
+    overflow-x: auto;
+  }
+  .calendar-weekdays, .nepali-calendar-grid {
+    min-width: 580px;
+  }
+  .roster-toolbar.compact strong, .roster-nav-group strong {
+    min-width: 160px;
+    font-size: 13px;
+  }
+  .toast {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    text-align: center;
+  }
+}
+
+
+
+
+
+
+/* ==========================================================================
+   High-Readability & Balanced Density for Maximized / Full-Screen Desktop
+   Scaled roughly 20% larger for crystal-clear readability at 100% resolution
+   ========================================================================== */
+@media (min-width: 1025px) {
+  :root {
+    --topbar-height: 84px;
+    --sidebar-width: 295px;
+  }
+
+  body {
+    font-size: 18px;
+  }
+
+  /* Topbar scaling */
+  .topbar {
+    padding: 0 36px;
+  }
+  .brand {
+    font-size: 24px;
+    gap: 14px;
+  }
+  .brand-mark,
+  .brand-icon {
+    width: 46px;
+    height: 46px;
+  }
+  .menu-button {
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
+  }
+  .network-badge {
+    font-size: 15px;
+    padding: 8px 16px;
+  }
+  .theme-toggle {
+    font-size: 15.5px;
+    padding: 10px 18px;
+  }
+  .admin-login-button {
+    font-size: 15.5px;
+    padding: 10px 18px;
+  }
+
+  /* Sidebar scaling */
+  .sidebar {
+    padding: 28px 18px;
+  }
+  .nav-label {
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  .nav-link {
+    font-size: 18px;
+    padding: 14px 18px;
+    gap: 16px;
+    border-radius: 12px;
+  }
+  .nav-link span {
+    font-size: 24px;
+  }
+  .user-card strong {
+    font-size: 17px;
+  }
+  .user-card small {
+    font-size: 14px;
+  }
+  .sidebar-help {
+    font-size: 15.5px;
+    padding: 14px 18px;
+  }
+
+  /* Main content layout */
+  .main-content {
+    padding: 32px 50px 60px;
+    max-width: 1800px;
+  }
+
+  /* Page heading */
+  .page-heading {
+    margin-bottom: 26px;
+  }
+  .eyebrow {
+    font-size: 14.5px;
+    letter-spacing: 1.4px;
+  }
+  .page-heading h1 {
+    font-size: 40px;
+    font-weight: 850;
+  }
+  .muted {
+    font-size: 17px;
+  }
+  .page-heading .button.primary {
+    font-size: 17px;
+    padding: 13px 26px;
+    border-radius: 10px;
+  }
+
+  /* Metric cards */
+  .metric-grid {
+    gap: 24px;
+    margin-bottom: 26px;
+  }
+  .metric-card {
+    padding: 24px 28px;
+    gap: 20px;
+    border-radius: 16px;
+  }
+  .metric-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+    border-radius: 16px;
+  }
+  .metric-card p {
+    font-size: 15px;
+    letter-spacing: 0.5px;
+  }
+  .metric-card strong {
+    font-size: 36px;
+    letter-spacing: -0.6px;
+  }
+  .metric-card strong small {
+    font-size: 15px;
+  }
+  .trend {
+    font-size: 14.5px;
+  }
+
+  /* Content grid: Sales chart + Today's attendance (full width stacked) */
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    margin-bottom: 26px;
+  }
+  .panel {
+    padding: 28px 32px;
+    border-radius: 16px;
+  }
+  .panel-heading {
+    margin-bottom: 18px;
+  }
+  .panel-heading h2, .panel h2 {
+    font-size: 24px;
+    font-weight: 850;
+  }
+  .panel-heading p.muted {
+    font-size: 16px;
+  }
+  .panel-heading select {
+    font-size: 15px;
+    padding: 8px 36px 8px 16px;
+    background-position: right 14px center;
+    border-radius: 8px;
+  }
+
+  /* Chart typography & line */
+  .chart {
+    height: 300px;
+    padding: 10px 0 28px 58px;
+  }
+  .chart svg {
+    height: 235px;
+  }
+  .chart-line {
+    stroke-width: 4.5px;
+  }
+  .chart-y {
+    font-size: 14.5px;
+    font-weight: 750;
+  }
+  .chart-x {
+    font-size: 14.5px;
+    font-weight: 750;
+    padding-top: 12px;
+  }
+
+  /* Today's attendance list */
+  .staff-row {
+    padding: 12px 0;
+    gap: 16px;
+  }
+  .staff-row .avatar {
+    width: 46px;
+    height: 46px;
+    font-size: 15px;
+    font-weight: 850;
+    border-radius: 12px;
+  }
+  .staff-row strong {
+    font-size: 17.5px;
+    font-weight: 800;
+  }
+  .staff-row small {
+    font-size: 14.5px;
+  }
+  .time-pill {
+    font-size: 15px;
+    padding: 7px 14px;
+    font-weight: 800;
+    border-radius: 20px;
+  }
+  .content-grid .button.secondary.full-width {
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 800;
+    margin-top: 14px;
+    border-radius: 10px;
+  }
+
+  /* Published Roster on Dashboard */
+  .published-roster-panel .roster-toolbar.compact {
+    margin-bottom: 16px;
+  }
+  .published-roster-panel .roster-toolbar.compact strong {
+    font-size: 19px;
+    font-weight: 850;
+  }
+  .published-roster-panel .roster-header,
+  .published-roster-panel .roster-row {
+    grid-template-columns: minmax(160px, 1.25fr) repeat(7, minmax(0, 1fr)) minmax(105px, 0.9fr);
+  }
+  .published-roster-panel .roster-header {
+    font-size: 14.5px;
+    font-weight: 850;
+  }
+  .published-roster-panel .roster-header > * {
+    padding: 13px 6px;
+  }
+  .published-roster-panel .roster-header small {
+    font-size: 13px;
+    font-weight: 750;
+    margin-top: 3px;
+  }
+  .published-roster-panel .staff-symbol {
+    width: 42px;
+    height: 42px;
+    font-size: 17px;
+    border-radius: 10px;
+  }
+  .published-roster-panel .staff-fullname {
+    font-size: 16.5px;
+    font-weight: 850;
+  }
+  .published-roster-panel .staff-job-title {
+    font-size: 13.5px;
+  }
+  .published-roster-panel .roster-cell {
+    min-height: 76px;
+    padding: 6px 5px;
+    border: 0 !important;
+    border-right: 1px solid var(--line) !important;
+    outline: none !important;
+  }
+  .published-roster-panel .roster-box {
+    min-height: 64px;
+    padding: 8px 6px;
+    border-radius: 9px;
+    border: none !important;
+  }
+  .published-roster-panel .roster-box-time {
+    font-size: 14.5px;
+    font-weight: 850;
+    line-height: 1.25;
+  }
+  .published-roster-panel .roster-box-note {
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .published-roster-panel .roster-box-tag {
+    font-size: 15px;
+    font-weight: 850;
+  }
+  .published-roster-panel .roster-summary {
+    font-size: 14.5px;
+    font-weight: 800;
+  }
+
+  /* Full Roster Page */
+  .roster-table-wrap .roster-header,
+  .roster-table-wrap .roster-row {
+    grid-template-columns: minmax(180px, 1.3fr) repeat(7, minmax(0, 1fr)) minmax(120px, 0.95fr);
+  }
+  .roster-table-wrap .roster-header {
+    font-size: 14.5px;
+    font-weight: 850;
+  }
+  .roster-table-wrap .roster-header small {
+    font-size: 13px;
+    font-weight: 750;
+  }
+  .roster-table-wrap .staff-symbol {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    border-radius: 11px;
+  }
+  .roster-table-wrap .staff-fullname {
+    font-size: 16.5px;
+    font-weight: 850;
+  }
+  .roster-table-wrap .staff-job-title {
+    font-size: 13.5px;
+  }
+  .roster-table-wrap .roster-cell {
+    min-height: 80px;
+    border: 0 !important;
+    border-right: 1px solid var(--line) !important;
+    outline: none !important;
+  }
+  .roster-table-wrap .roster-box {
+    border: none !important;
+  }
+  .roster-table-wrap .roster-box-time {
+    font-size: 15px;
+    font-weight: 850;
+  }
+  .roster-table-wrap .roster-box-tag {
+    font-size: 15px;
+    font-weight: 850;
+  }
+
+  /* Attendance page elements */
+  .attendance-login-card h2 {
+    font-size: 26px;
+  }
+  .keypad button {
+    font-size: 24px;
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+  }
+  .attendance-action {
+    font-size: 17.5px;
+    padding: 16px 22px;
+    border-radius: 12px;
+  }
+  .floor-row {
+    padding: 12px 0;
+    gap: 16px;
+  }
+  .floor-row .avatar {
+    width: 46px;
+    height: 46px;
+    font-size: 18px;
+    border-radius: 12px;
+  }
+  .floor-row strong {
+    font-size: 17.5px;
+  }
+  .floor-row small {
+    font-size: 14.5px;
+  }
+  .badge {
+    font-size: 14px;
+    padding: 6px 14px;
+    border-radius: 16px;
+  }
+
+  /* Help page */
+  .help-card {
+    padding: 28px 32px;
+    border-radius: 16px;
+  }
+  .help-card h2 {
+    font-size: 24px;
+  }
+  .help-card p {
+    font-size: 17px;
+  }
+  .help-number {
+    font-size: 16px;
+  }
+}

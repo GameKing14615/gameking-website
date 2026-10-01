@@ -1,0 +1,65 @@
+/* --- 1. THEME VARIABLES & TOKENS --- */
+:root {
+  --navy: #16324f;
+  --navy-2: #214766;
+  --navy-light: #2c5980;
+  --teal: #21b887;
+  --teal-light: #72d6ba;
+  --mint: #e8f7f2;
+  --cream: #f4f7f9;
+  --surface: #ffffff;
+  --surface-subtle: #f8fafc;
+  --ink: #1e293b;
+  --ink-secondary: #475569;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  --white: #ffffff;
+  --amber: #f59e0b;
+  --amber-light: #fef3c7;
+  --red: #ef4444;
+  --red-light: #fee2e2;
+  --blue: #2563eb;
+  --blue-light: #dbeafe;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow: 0 4px 14px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+  --shadow-md: 0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 20px 40px -10px rgba(15, 23, 42, 0.14);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --topbar-height: 64px;
+  --sidebar-width: 236px;
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--font-sans);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --navy: #dbe8f5;
+  --navy-2: #a2c4de;
+  --navy-light: #6490b4;
+  --teal: #34d399;
+  --teal-light: #6ee7b7;
+  --mint: #132e29;
+  --cream: #0c141d;
+  --surface: #152230;
+  --surface-subtle: #1a2a3b;
+  --ink: #f1f5f9;
+  --ink-secondary: #cbd5e1;
+  --muted: #94a3b8;
+  --line: #223447;
+  --line-strong: #2e4760;
+  --white: #152230;
+  --amber: #fbbf24;
+  --amber-light: #3d2d14;
+  --red: #f87171;
+  --red-light: #451b1b;
+  --blue: #60a5fa;
+  --blue-light: #1e3048;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}

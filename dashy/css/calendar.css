@@ -1,0 +1,435 @@
+/* Nepali Calendar Panel */
+.nepali-calendar-panel {
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.calendar-title-wrap {
+  position: relative;
+  text-align: center;
+}
+
+.calendar-title-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.calendar-title-button h2 {
+  font-size: 20px;
+  font-weight: 750;
+  color: var(--navy);
+  margin: 0;
+}
+
+.calendar-equivalent {
+  display: block;
+  margin: 4px auto 0;
+  text-align: center;
+  background: var(--blue-light);
+  color: var(--blue);
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 10.5px;
+  font-weight: 650;
+  width: fit-content;
+}
+
+.calendar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-weekdays, .nepali-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.calendar-weekdays {
+  border-bottom: 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.calendar-weekdays span {
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-align: center;
+  padding: 9px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nepali-calendar-grid {
+  border-top: 0;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+.bs-day {
+  background: var(--surface);
+  min-height: 84px;
+  padding: 7px;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.15s ease;
+}
+
+.bs-day.empty {
+  background: var(--cream);
+  opacity: 0.6;
+}
+
+.bs-day.saturday {
+  background: rgba(239, 68, 68, 0.03);
+}
+
+[data-theme="dark"] .bs-day.saturday {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.bs-day.today {
+  background: rgba(33, 184, 135, 0.08);
+  box-shadow: inset 0 0 0 2px var(--teal);
+}
+
+.bs-number {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.bs-number strong {
+  font-size: 19px;
+  color: var(--navy);
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+.saturday .bs-number strong {
+  color: var(--red);
+}
+
+.day-shifts {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: auto;
+  padding-top: 6px;
+  min-height: 20px;
+}
+
+.shift-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.bs-day[data-calendar-date] {
+  cursor: pointer;
+}
+
+.bs-day[data-calendar-date]:hover {
+  background: rgba(33, 184, 135, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(33, 184, 135, 0.22);
+}
+
+.attendance-override-card {
+  width: min(100%, 520px);
+  padding: 24px;
+}
+
+.attendance-override-card h2 {
+  margin: 0 0 10px;
+  color: var(--navy);
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.attendance-override-card [data-attendance-override-date] {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.attendance-override-help {
+  margin: 8px 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.attendance-override-list {
+  display: grid;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.attendance-override-option {
+  display: grid;
+  grid-template-columns: auto 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.attendance-override-option:has(input:checked) {
+  border-color: var(--teal);
+  background: rgba(33, 184, 135, 0.07);
+}
+
+.attendance-override-option input {
+  accent-color: var(--teal);
+}
+
+.attendance-override-option > span:last-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.attendance-override-option strong,
+.attendance-override-option small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attendance-override-option small {
+  color: var(--muted);
+}
+
+.attendance-override-card .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+/* Calendar Picker Popup */
+.calendar-picker {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.calendar-picker > div:first-child {
+  display: flex;
+  gap: 6px;
+}
+
+.calendar-picker select {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.picker-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-top: 8px;
+}
+
+.picker-days button {
+  border: 0;
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  padding: 5px;
+  font-size: 11px;
+  color: var(--ink);
+}
+
+.picker-days button:hover, .picker-days button.selected {
+  background: var(--teal);
+  color: #ffffff;
+}
+
+/* Admin Controls Panel */
+.admin-controls-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, .75fr) minmax(0, 1.25fr);
+  align-items: start;
+  gap: 16px;
+  margin-top: 20px;
+  border-color: rgba(33, 184, 135, 0.4);
+  background: rgba(33, 184, 135, 0.04);
+}
+
+.admin-controls-panel h2 {
+  color: var(--navy);
+  margin: 0 0 4px;
+}
+
+.admin-control-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attendance-settings-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.admin-controls-panel > .staff-manager {
+  grid-column: 1 / -1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.attendance-settings-form label {
+  display: grid;
+  gap: 5px;
+  min-width: 250px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.attendance-time-fields {
+  display: flex;
+  gap: 6px;
+}
+
+.attendance-settings-form input,
+.attendance-settings-form select {
+  width: 120px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.attendance-settings-form select {
+  width: 116px;
+}
+
+.attendance-settings-form small {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.staff-manager {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.staff-manager-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.staff-manager-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--muted);
+}
+
+.staff-manager-form input {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .admin-controls-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-controls-panel > .staff-manager {
+    grid-column: auto;
+  }
+
+  .attendance-settings-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .attendance-settings-form label {
+    min-width: 0;
+  }
+}
+
+.manager-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.manager-row > span:nth-child(2) {
+  flex: 1;
+}
+
+.manager-row strong {
+  display: block;
+  font-size: 13px;
+  color: var(--navy);
+}
+
+.manager-row small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
