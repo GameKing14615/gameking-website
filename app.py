@@ -1,8 +1,11 @@
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from datetime import datetime
+from pathlib import Path
 import uuid
 import random
 import time
+import sqlite3
+import hashlib
 
 # Create a Flask web application instance
 app = Flask(__name__)
@@ -14,6 +17,125 @@ matchmaking_queue = []
 matchmaking_clients = {}
 
 MATCHMAKING_STALE_SECONDS = 20
+DB_PATH = Path(__file__).resolve().parent / 'gameking.db'
+DEFAULT_BEFOREGTA6_POSTS = [
+    {
+        'post_key': 'seed-flying-taxis',
+        'title': 'We got flying taxis before GTA 6',
+        'description': 'Prototype eVTOL fleets now operate in three test cities with paid commuter routes.',
+        'image': '/static/images/beforegta6.jpg',
+        'author': '@Gamer_Life',
+        'days_ago': 0,
+        'upvotes': 12000,
+        'downvotes': 420,
+        'comments': 1500,
+        'badge': 'News',
+        'tags': 'Science,News'
+    },
+    {
+        'post_key': 'seed-ai-toasters',
+        'title': 'We got AI-powered toasters before GTA 6',
+        'description': 'They can read nutrition labels, detect bread type, and roast with computer vision now.',
+        'image': '/static/images/beforegta6.jpg',
+        'author': '@Tech_Junkie',
+        'days_ago': 1,
+        'upvotes': 8000,
+        'downvotes': 330,
+        'comments': 900,
+        'badge': 'Gadgets',
+        'tags': 'Entertainment'
+    },
+    {
+        'post_key': 'seed-immersive-vr',
+        'title': 'We got fully immersive VR before GTA 6',
+        'description': 'Consumer setups now do eye tracking, haptics, and full body movement in one kit.',
+        'image': '/static/images/beforegta6.jpg',
+        'author': '@Future_Now',
+        'days_ago': 2,
+        'upvotes': 20000,
+        'downvotes': 790,
+        'comments': 3200,
+        'badge': 'Tech',
+        'tags': 'Gaming'
+    },
+    {
+        'post_key': 'seed-neural-city',
+        'title': 'We got neural city planners before GTA 6',
+        'description': 'Simulation models now optimize traffic and zoning plans across entire metro regions.',
+        'image': '/static/images/beforegta6.jpg',
+        'author': '@CyberSec',
+        'days_ago': 3,
+        'upvotes': 15000,
+        'downvotes': 550,
+        'comments': 2100,
+        'badge': 'Future',
+        'tags': 'Politics,Science'
+    }
+]
+
+
+def _get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _init_database():
+    conn = _get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS social_profiles (
+            user_key TEXT PRIMARY KEY,
+            provider TEXT NOT NULL,
+            handle TEXT NOT NULL,
+            username TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS post_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            author TEXT NOT NULL,
+            tags TEXT,
+            created_at TEXT NOT NULL
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS beforegta6_posts (
+            post_key TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            image TEXT NOT NULL,
+            author TEXT NOT NULL,
+            days_ago INTEGER NOT NULL DEFAULT 0,
+            upvotes INTEGER NOT NULL DEFAULT 0,
+            downvotes INTEGER NOT NULL DEFAULT 0,
+            comments INTEGER NOT NULL DEFAULT 0,
+            badge TEXT NOT NULL,
+            tags TEXT,
+            created_at TEXT NOT NULL
+        )
+    ''')
+
+    now_iso = datetime.utcnow().isoformat() + 'Z'
+    for post in DEFAULT_BEFOREGTA6_POSTS:
+        cursor.execute(
+            '''
+            INSERT OR IGNORE INTO beforegta6_posts
+            (post_key, title, description, image, author, days_ago, upvotes, downvotes, comments, badge, tags, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''',
+            (
+                post['post_key'], post['title'], post['description'], post['image'], post['author'],
+                post['days_ago'], post['upvotes'], post['downvotes'], post['comments'], post['badge'], post['tags'], now_iso
+            )
+        )
+    conn.commit()
+    conn.close()
+
+
+_init_database()
 
 
 def _cleanup_matchmaking():
@@ -379,6 +501,198 @@ def matchmaking_leave():
 
     return jsonify({'success': True})
 
+
+@app.route('/api/social-login', methods=['POST'])
+def social_login():
+    """Persist a social-profile style login for frontend account sync."""
+    data = request.get_json() or {}
+    provider = (data.get('provider') or '').strip().lower()
+    handle = (data.get('handle') or '').strip()
+
+    allowed_providers = {'google', 'twitter', 'facebook', 'reddit'}
+    if provider not in allowed_providers:
+        return jsonify({'success': False, 'message': 'Unsupported provider'}), 400
+
+    if not handle:
+        return jsonify({'success': False, 'message': 'Missing handle'}), 400
+
+    normalized_handle = ''.join(ch for ch in handle if ch.isalnum() or ch in ('_', '-', '.'))[:32]
+    if not normalized_handle:
+        return jsonify({'success': False, 'message': 'Handle is invalid'}), 400
+
+    user_key = hashlib.sha256(f"{provider}:{normalized_handle.lower()}".encode('utf-8')).hexdigest()
+    username = normalized_handle
+    now_iso = datetime.utcnow().isoformat() + 'Z'
+
+    conn = _get_db_connection()
+    conn.execute(
+        '''
+        INSERT INTO social_profiles (user_key, provider, handle, username, updated_at)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(user_key) DO UPDATE SET
+            handle=excluded.handle,
+            username=excluded.username,
+            updated_at=excluded.updated_at
+        ''',
+        (user_key, provider, handle, username, now_iso)
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        'success': True,
+        'username': username,
+        'profile': {
+            'user_key': user_key,
+            'provider': provider,
+            'handle': handle,
+            'username': username,
+            'updated_at': now_iso
+        }
+    })
+
+
+@app.route('/api/post-event', methods=['POST'])
+def post_event():
+    """Store lightweight post creation event for analytics/debugging."""
+    data = request.get_json() or {}
+    title = (data.get('title') or '').strip()
+    author = (data.get('author') or '').strip()
+    tags = data.get('tags') or []
+
+    if not title or not author:
+        return jsonify({'success': False, 'message': 'Missing title or author'}), 400
+
+    tag_text = ','.join(str(tag) for tag in tags[:8]) if isinstance(tags, list) else ''
+
+    conn = _get_db_connection()
+    conn.execute(
+        'INSERT INTO post_events (title, author, tags, created_at) VALUES (?, ?, ?, ?)',
+        (title, author, tag_text, datetime.utcnow().isoformat() + 'Z')
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({'success': True})
+
+
+@app.route('/api/beforegta6/posts', methods=['GET'])
+def beforegta6_posts_list():
+    """Return Before GTA 6 posts from persistent storage."""
+    conn = _get_db_connection()
+    rows = conn.execute(
+        '''
+        SELECT post_key, title, description, image, author, days_ago, upvotes, downvotes, comments, badge, tags
+        FROM beforegta6_posts
+        ORDER BY upvotes DESC, created_at DESC
+        '''
+    ).fetchall()
+    conn.close()
+
+    posts = []
+    for row in rows:
+        tags = [tag.strip() for tag in (row['tags'] or '').split(',') if tag.strip()]
+        posts.append({
+            'post_key': row['post_key'],
+            'title': row['title'],
+            'description': row['description'],
+            'image': row['image'],
+            'author': row['author'],
+            'daysAgo': row['days_ago'],
+            'upvotes': row['upvotes'],
+            'downvotes': row['downvotes'],
+            'comments': row['comments'],
+            'badge': row['badge'],
+            'tags': tags
+        })
+
+    return jsonify({'success': True, 'posts': posts})
+
+
+@app.route('/api/beforegta6/posts', methods=['POST'])
+def beforegta6_create_post():
+    """Create a persistent Before GTA 6 post."""
+    data = request.get_json() or {}
+    title = (data.get('title') or '').strip()
+    description = (data.get('description') or '').strip()
+    image = (data.get('image') or '').strip()
+    author = (data.get('author') or '').strip()
+    badge = (data.get('badge') or '').strip() or 'General'
+    tags = data.get('tags') if isinstance(data.get('tags'), list) else []
+
+    if not title or not description or not image or not author:
+        return jsonify({'success': False, 'message': 'Missing required fields'}), 400
+
+    post_key = 'post-' + uuid.uuid4().hex[:12]
+    tags_text = ','.join(str(tag).strip() for tag in tags[:8] if str(tag).strip())
+    now_iso = datetime.utcnow().isoformat() + 'Z'
+
+    conn = _get_db_connection()
+    conn.execute(
+        '''
+        INSERT INTO beforegta6_posts
+        (post_key, title, description, image, author, days_ago, upvotes, downvotes, comments, badge, tags, created_at)
+        VALUES (?, ?, ?, ?, ?, 0, 0, 0, 0, ?, ?, ?)
+        ''',
+        (post_key, title, description, image, author, badge, tags_text, now_iso)
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        'success': True,
+        'post': {
+            'post_key': post_key,
+            'title': title,
+            'description': description,
+            'image': image,
+            'author': author,
+            'daysAgo': 0,
+            'upvotes': 0,
+            'downvotes': 0,
+            'comments': 0,
+            'badge': badge,
+            'tags': tags
+        }
+    })
+
+
+@app.route('/api/beforegta6/vote', methods=['POST'])
+def beforegta6_vote():
+    """Persist up/down votes for a post."""
+    data = request.get_json() or {}
+    post_key = (data.get('post_key') or '').strip()
+    vote_type = (data.get('vote_type') or '').strip().lower()
+
+    if not post_key or vote_type not in {'up', 'down'}:
+        return jsonify({'success': False, 'message': 'Invalid vote payload'}), 400
+
+    column = 'upvotes' if vote_type == 'up' else 'downvotes'
+    conn = _get_db_connection()
+    updated = conn.execute(
+        f'UPDATE beforegta6_posts SET {column} = {column} + 1 WHERE post_key = ?',
+        (post_key,)
+    )
+
+    if updated.rowcount == 0:
+        conn.close()
+        return jsonify({'success': False, 'message': 'Post not found'}), 404
+
+    row = conn.execute(
+        'SELECT upvotes, downvotes FROM beforegta6_posts WHERE post_key = ?',
+        (post_key,)
+    ).fetchone()
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        'success': True,
+        'post_key': post_key,
+        'upvotes': row['upvotes'],
+        'downvotes': row['downvotes']
+    })
+
 # This part runs the application when you execute the script
 if __name__ == '__main__':
+    _init_database()
     app.run(debug=True)  # debug=True allows automatic reloading on changes

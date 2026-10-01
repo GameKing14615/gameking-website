@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="darkreader-lock" />
     <meta name="theme-color" content="#16324f" />
     <meta name="description" content="Dashy by TNH internal business dashboard" />
     <link rel="stylesheet" href="/static/dashy/styles.css" />
@@ -870,7 +871,7 @@
               <li>
                 After source edits, run
                 <code>
-                  python format_html.py
+                  python build.py
                 </code>
                 , then
                 <code>
@@ -1049,7 +1050,7 @@
               <li>
                 Make source changes first; regenerate outputs with
                 <code>
-                  python format_html.py
+                  python build.py
                 </code>
                 and
                 <code>

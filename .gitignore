@@ -10,3 +10,7 @@ Thumbs.db
 
 # VSCode
 .vscode/
+
+# Local runtime data and generated intermediate output
+gameking.db
+dashy/deploy/

@@ -12,6 +12,7 @@ dashy/                 Complete Dashy dashboard source
 netlify_build.py       Rebuilds the Netlify dist/ artifact
 netlify.toml           Netlify build and route configuration
 dist/                  Generated Netlify publish directory
+docs/                  Project notes and maintenance documentation
 ```
 
 Dashy is maintained in `dashy/` and is built automatically by the parent
@@ -32,7 +33,16 @@ Dashy page in production.
 
 - The homepage has a CSS background fallback, so it remains visually usable
   when a browser extension blocks the optional animated background library.
-- The animated background is viewport-fixed rather than document-sized, which
-  prevents a second scaled image from appearing behind the footer while
-  scrolling.
+- The homepage animated scene is document-sized and aligned to the footer, so
+  the mountain scene scrolls with the page without extending behind the footer.
 - `dist/` is generated output and should be rebuilt after source changes.
+- `gameking.db` is local Flask runtime data and is intentionally not committed.
+
+## Maintenance rules
+
+- Edit HTML in `templates/`, site assets in `static/`, and Dashy source in
+  `dashy/`; do not edit generated files in `dist/` or `dashy/deploy/`.
+- Run `python netlify_build.py` after source changes. This rebuilds Dashy through
+  `dashy/build.py` and recreates the complete Netlify publish directory.
+- Keep the public routes in `netlify.toml` and the `.html` files in `dist/`
+  synchronized so both Flask and the Python static preview continue to work.

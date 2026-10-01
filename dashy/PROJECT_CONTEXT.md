@@ -150,7 +150,6 @@ Before publishing a release, complete this checklist:
 
 1. From the GameKing website repository, run:
    ```bash
-   python dashy/format_html.py
    python dashy/build.py
    python -m py_compile netlify_build.py dashy/build.py
    git diff --check
