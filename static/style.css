@@ -14,16 +14,15 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    background: #1a1a1a url("/static/images/pixelbg.png") center top / cover fixed no-repeat;
+    background: #1a1a1a url("/static/images/pixelbg.png") center center / cover fixed no-repeat;
 }
 
 /* Styles for the background canvas */
 #backgroundCanvas {
-    position: absolute; /* Position relative to its parent (body) */
-    top: 0;
-    left: 0;
-    width: 100%; /* Full width of its parent (body) */
-    height: 100%; /* Full height of its parent (body) */
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
     z-index: 0; /* Keep the animated canvas behind the page content. */
     pointer-events: none;
 }
