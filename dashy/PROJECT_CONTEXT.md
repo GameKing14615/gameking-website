@@ -25,14 +25,14 @@
 > - The application must run directly via Python's built-in HTTP server: `python -m http.server 5500`.
 
 ### Deployment Target
-- **Hosting:** Static deployment on **Netlify** as part of the main GameKing website repository (`D:\Python\Website Project (GameKing)`).
-- **Build Pipeline:** `python build.py`
-  - Formats `dashy.html` and rewrites asset URLs to `/static/dashy/...`.
-  - Bundles all modular CSS files in `css/` into `deploy/static/dashy/styles.css`.
-  - Copies `app.js` into `deploy/static/dashy/app.js`.
-  - Copies `assets/dashy-icon.svg` into `deploy/static/dashy/dashy-icon.svg`.
-  - Output directory is `deploy/`.
-- **Git Branch:** `main` (Remote: `https://github.com/GameKing14615/Internal-Dash-board-Project.git`).
+- **Location:** Resides in `dashy/` within the main GameKing website repository (`D:\Python\Website Project (GameKing)`).
+- **Portal Link:** Accessible as **Project Circle 3** on the GameKing homepage via `/dashy` or `/dashy.html`.
+- **Hosting:** Static deployment on **Netlify** as part of the unified GameKing build.
+- **Build Pipeline:**
+  - `dashy/build.py`: Formats `dashy.html` and rewrites asset URLs to `/static/dashy/...`, bundles `css/` into `deploy/static/dashy/styles.css`, and prepares assets in `deploy/`.
+  - `netlify_build.py` (parent): Automatically calls `dashy/build.py` and copies artifacts to `dist/dashy.html`, `dist/dashy/index.html`, and `dist/static/dashy/`.
+  - For local Flask server, `templates/dashy.html` and `static/dashy/` serve Dashy at `http://localhost:5000/dashy`.
+- **Git Branch:** `main`.
 
 ---
 
@@ -41,11 +41,11 @@
 To prevent AI model sluggishness and save tokens, the CSS has been modularized into domain-specific files under `css/`. **When working on a specific feature, only read or edit that specific file!**
 
 ```
-Internal Dash board Project/
-├── index.html                 # Main development HTML shell
+Website Project (GameKing)/dashy/
+├── index.html                 # Main development HTML shell (standalone)
 ├── styles.css                 # Master @import loader for development (17 lines)
 ├── app.js                     # Core application script (feature modules and event handlers)
-├── build.py                   # Netlify bundler & deployment script
+├── build.py                   # Dashy bundler & deployment script
 ├── PROJECT_CONTEXT.md         # This master context document
 ├── assets/                    # All app icons and graphics
 │   ├── dashy-icon.svg         # DO NOT TOUCH! Master branding squircle icon

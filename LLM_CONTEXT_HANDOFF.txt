@@ -1,319 +1,147 @@
 GAMEKING WEBSITE - FULL LLM HANDOFF (ZERO-CONTEXT RECOVERY DOCUMENT)
 
-Last updated: 2026-04-04
+Last updated: 2026-10-02
 Primary goal of this document:
-- Give any future LLM or engineer enough context to safely modify and deploy this project.
-- Prevent recurrence of the production incident where the live site rendered as unstyled plain text.
+- Give any future LLM or engineer complete context to safely modify, run, and deploy this project.
+- Prevent recurrence of production incidents (plain-text unstyled UI, broken 404 routes, missing static assets).
 
 =================================================================
-1) EXECUTIVE SUMMARY
+1) EXECUTIVE SUMMARY & ACTIVE PROJECTS
 =================================================================
 
-This repository is a Flask-based project used in two modes:
+GameKing is a multi-project web platform with an animated retro portal homepage.
+The project grid on the homepage features 7 circular cards:
+1. Circle 1: Tic-Tac-Toe (/tictactoe, /tictactoe.html)
+   - Singleplayer vs AI and real-time multiplayer with matchmaking queue & in-memory room state.
+2. Circle 2: Before GTA 6 (/beforegta6, /beforegta6.html)
+   - Community meme tracker with category badges, up/down voting, submission modal, and persistent SQLite database.
+3. Circle 3: Dashy by TNH (/dashy, /dashy.html)
+   - Internal operations dashboard for GameKing in Pokhara, Nepal.
+   - Zero-framework vanilla stack: Nepali BS calendar (2080-2086), staff PIN attendance, weekly roster, cleaning schedule, vendor ledger (currency in Rs).
+4. Circles 4–7: Reserved placeholder slots for future games/tools.
 
-A) Local development mode (Flask server)
-- Flask serves templates from templates/ and assets from static/.
-- Routes like /, /tictactoe, /beforegta6 work through Flask route handlers.
+The project operates in two primary environments:
 
-B) Production mode on Netlify (static deploy)
-- Netlify is NOT running Flask app.py.
-- Netlify runs a build step that creates dist/ from templates/ and static/.
-- Netlify publishes dist/.
-- Friendly URL redirects are defined in netlify.toml.
+A) Local full-stack development mode (Flask server)
+- Runs with: python app.py (default port: 5000)
+- Serves dynamic templates from templates/ and assets from static/.
+- Serves both clean routes (/, /tictactoe, /beforegta6, /dashy) and .html aliases (/tictactoe.html, /beforegta6.html, /dashy.html).
+- Handles backend APIs: Before GTA 6 persistent storage & voting, Tic-Tac-Toe matchmaking and room state.
 
-Critical fact:
-- For Netlify, all asset references in HTML must be absolute paths like /static/... (not ../static/...).
+B) Production static mode on Netlify
+- Netlify does NOT run Flask app.py.
+- Netlify runs build command: python netlify_build.py
+- Netlify publishes directory: dist/
+- netlify.toml configures 200 rewrites for /tictactoe, /beforegta6, /dashy.
+
+C) Local static preview mode
+- Runs with: python netlify_build.py && python -m http.server 8000 --directory dist
+- Used to test raw static output as Netlify will serve it.
 
 =================================================================
-2) REPOSITORY STRUCTURE AND FILE ROLES
+2) REPOSITORY STRUCTURE AND ROLES
 =================================================================
 
 Root files:
 - app.py
-  Flask app used for localhost development and API endpoints (multiplayer + BeforeGTA6 data APIs).
+  Flask server for local development and backend APIs.
 - gameking.db
-  Local SQLite database file created/used by app.py for social profiles, post events, and BeforeGTA6 posts.
+  Local SQLite database used by app.py (social profiles, post events, beforegta6_posts).
 - netlify.toml
-  Netlify build + publish configuration and route redirects.
+  Netlify build command, publish directory, and 200 route redirects.
 - netlify_build.py
-  Build script used by Netlify to generate dist/.
+  Master build script that builds Dashy, copies templates to dist/, and bundles static assets.
+- README.md
+  User-facing and developer documentation.
 - LLM_CONTEXT_HANDOFF.txt
-  This handoff document.
+  This recovery handoff document.
 
 Folders:
 - templates/
-  Source HTML pages used by Flask and copied into dist/ for Netlify.
-  Key pages:
-  - index.html
-  - tictactoe.html
-  - beforegta6.html
+  Source HTML pages used by Flask and copied into dist/ for Netlify:
+  - index.html (Homepage with 7 circular project cards and p5.js animation)
+  - tictactoe.html (Tic-Tac-Toe game board and matchmaking UI)
+  - beforegta6.html (Before GTA 6 community feed and post submission modal)
+  - dashy.html (Dashy operations dashboard page)
 
 - static/
-  Source static assets:
+  Canonical static assets for the website:
   - CSS: style.css, style_tictactoe.css, gtastyle.css
-  - JS: background.js, tictactoe.js, tkbackground.js, script.js
-  - Images/GIFs used across pages
+  - JS: background.js (p5.js animation), tictactoe.js (game engine & matchmaking), tkbackground.js
+  - dashy/: Production bundle of Dashy styles, app.js, and SVG icons (generated by dashy/build.py)
+  - images/: Site logos, pixel artwork, sprites, and background assets
+
+- dashy/
+  Canonical source tree for Dashy by TNH:
+  - index.html: Standalone development shell
+  - app.js: Dashy application script
+  - build.py: Dashy bundler script (combines modular CSS into deploy/)
+  - PROJECT_CONTEXT.md: Complete domain and business context for Dashy
+  - assets/: Vector icons (dashy-icon.svg is sacred branding)
+  - css/: Modular stylesheets (attendance, base, calendar, components, dashboard, responsive, roster, user-management, variables, vendors)
 
 - dist/
-  Netlify deploy artifact generated by netlify_build.py.
+  Netlify build output generated by netlify_build.py. NEVER edit directly.
   Contains:
   - dist/index.html
   - dist/tictactoe.html
   - dist/beforegta6.html
-  - dist/static/... (copied from static/)
-
-Important note:
-- script.js currently exists but is empty. This is not an error.
+  - dist/dashy.html & dist/dashy/index.html
+  - dist/static/...
 
 =================================================================
-3) HOW THE APP WORKS LOCALLY (FLASK)
+3) ROUTING CONTRACT (FLASK VS NETLIFY)
 =================================================================
 
-Main page routes in app.py:
-- / -> render_template('index.html')
-- /tictactoe -> render_template('tictactoe.html')
-- /beforegta6 -> render_template('beforegta6.html')
+To prevent broken links across both environments:
 
-Before GTA 6 backend/API endpoints in app.py:
-- /api/social-login
-- /api/post-event
-- /api/beforegta6/posts (GET + POST)
-- /api/beforegta6/vote
+In templates/index.html:
+- Circle 1 links to /tictactoe.html
+- Circle 2 links to /beforegta6.html
+- Circle 3 links to /dashy
 
-Persistence behavior (new):
-- app.py initializes SQLite tables on startup in gameking.db.
-- beforegta6_posts is seeded with default posts via INSERT OR IGNORE.
-- User-created BeforeGTA6 posts and votes persist across app restarts (as long as gameking.db is preserved).
+In app.py (Flask):
+- @app.route('/')
+- @app.route('/tictactoe', strict_slashes=False) + @app.route('/tictactoe.html')
+- @app.route('/beforegta6', strict_slashes=False) + @app.route('/beforegta6.html')
+- @app.route('/dashy', strict_slashes=False) + @app.route('/dashy.html')
 
-Tic-Tac-Toe backend endpoints in app.py:
-- /game/create_room (legacy host/join flow still present)
-- /game/get_state/<room_code>
-- /game/make_move
-- /game/reset
+In netlify.toml (Netlify):
+- Redirect /tictactoe -> /tictactoe.html (status = 200)
+- Redirect /beforegta6 -> /beforegta6.html (status = 200)
+- Redirect /dashy -> /dashy.html (status = 200)
 
-Matchmaking endpoints (currently active frontend flow):
-- /game/matchmaking/join
-- /game/matchmaking/status
-- /game/matchmaking/leave
-
-Matchmaking behavior:
-- In-memory FIFO queue.
-- Pairs players into room codes.
-- Stale clients cleaned after timeout.
-- Not persistent across process restarts.
+Result: Both clean URLs and .html URLs work seamlessly in both local Flask and production Netlify.
 
 =================================================================
-4) HOW PRODUCTION DEPLOYMENT WORKS (NETLIFY)
+4) INCIDENT HISTORY & RESOLUTIONS
 =================================================================
 
-netlify.toml currently defines:
-- Build command: python netlify_build.py
-- Publish directory: dist
-- Redirects:
-  - /tictactoe -> /tictactoe.html
-  - /beforegta6 -> /beforegta6.html
+Incident 1: Plain-text unstyled page in production
+- Cause: Templates used relative paths (../static/...) and publish directory was missing.
+- Fix: Converted all asset links to root-absolute (/static/...) and created netlify_build.py to generate dist/.
 
-netlify_build.py behavior:
-1. Deletes existing dist/ if present.
-2. Creates new dist/.
-3. Copies selected pages from templates/ to dist/ root.
-4. Copies static/ to dist/static/.
-
-Result:
-- Netlify serves a standard static site structure.
-- URLs resolve without needing Flask runtime.
-
-Important production caveat:
-- Netlify static hosting does not run app.py APIs.
-- Any feature in beforegta6.html that calls /api/... requires a separate running backend service.
+Incident 2: 404 Not Found when clicking circles 1–3 in Flask
+- Cause: index.html links had .html extensions (/tictactoe.html, /beforegta6.html) and /dashy, which worked on static servers but Flask only had clean routes (/tictactoe, /beforegta6) and lacked a /dashy route.
+- Fix: Added dual route decorators in app.py for clean paths and .html paths, plus /dashy and /dashy.html.
 
 =================================================================
-5) INCIDENT HISTORY (VERY IMPORTANT)
+5) NON-NEGOTIABLE DEVELOPMENT RULES
 =================================================================
 
-Production incident that happened:
-- Netlify deployment succeeded but site rendered as plain text / broken UI.
-- CSS, JS, canvas, and images appeared missing.
+Rule 1: Never edit dist/ or dashy/deploy/ directly.
+- Always edit templates/, static/, or dashy/ source files, then run python netlify_build.py.
 
-Root causes discovered:
-1) Wrong publish directory configuration
-- Netlify was configured to publish dist while no dist folder existed.
-- Build command was empty, so nothing generated dist.
+Rule 2: Never use relative ../static paths in templates.
+- Always use /static/... absolute paths.
 
-2) Pathing mismatch between Flask local and Netlify static serving
-- HTML used relative asset paths like ../static/...
-- Under Netlify redirects/static serving, these references resolved incorrectly.
+Rule 3: Dashy sacred assets:
+- NEVER overwrite or modify dashy/assets/dashy-icon.svg.
+- Keep currency as Nepalese Rupees (Rs).
+- Keep timezone synced to Asia/Kathmandu.
 
-Fixes applied:
-1) Added deterministic Netlify build script: netlify_build.py
-2) Configured netlify.toml to run that build and publish dist/
-3) Updated templates to use absolute asset paths /static/... everywhere
-4) Included dist in repo so deploy artifact exists as fallback
-
-Why this solved it:
-- Netlify always has a valid publish directory.
-- Paths are stable regardless of route depth/redirect behavior.
-
-=================================================================
-6) NON-NEGOTIABLE DEPLOYMENT RULES
-=================================================================
-
-Rule 1: Do not use relative ../static paths in templates.
-- Always use /static/... in HTML, inline JS constants, and image references.
-
-Rule 2: If adding a new page, update BOTH:
-- netlify_build.py PAGES list
-- netlify.toml redirects (if friendly route needed)
-
-Rule 3: Keep netlify.toml publish = dist and command = python netlify_build.py.
-
-Rule 4: Validate generated dist before push when making major changes.
-
-Rule 5: Do not rely on Flask runtime behavior for Netlify production.
-
-=================================================================
-7) SAFE CHANGE WORKFLOW FOR FUTURE LLMs
-=================================================================
-
-When changing UI/pages:
-1. Edit files in templates/ and static/.
-2. Ensure all references are /static/... absolute paths.
-3. Run local check:
-   - python netlify_build.py
-4. Verify these exist:
-   - dist/index.html
-   - dist/tictactoe.html
-   - dist/beforegta6.html
-   - dist/static/style.css (and other needed assets)
-5. Push to main.
-6. Confirm Netlify deploy from latest commit and status Published.
-
-When adding a new route/page (example: /newpage):
-1. Add templates/newpage.html
-2. Add "newpage.html" to PAGES in netlify_build.py
-3. Add redirect in netlify.toml:
-   from = "/newpage"
-   to = "/newpage.html"
-   status = 200
-4. Run python netlify_build.py and verify dist/newpage.html exists
-5. Commit and push
-
-=================================================================
-8) DIAGNOSTIC CHECKLIST IF SITE BREAKS AGAIN
-=================================================================
-
-If site looks unstyled or images missing:
-1. Check deployed commit in Netlify Deploys tab.
-2. Confirm netlify.toml still has:
-   - build command python netlify_build.py
-   - publish dist
-3. Confirm dist contains HTML and static assets.
-4. Search templates for bad relative paths:
-   - ../static
-5. Verify browser network requests are not 404 for:
-   - /static/style.css
-   - /static/js/background.js
-   - /static/images/... used by page
-
-If deploy fails with "Deploy directory 'dist' does not exist":
-- Build command did not run or script failed.
-- Verify netlify_build.py exists at repo root and runs successfully.
-
-If pages load but friendly routes fail:
-- Check netlify.toml redirects and syntax.
-
-If multiplayer behaves oddly in production:
-- Remember backend state is in-memory in app.py.
-- Netlify static hosting does not run Flask backend by itself.
-- Multiplayer requires a running Python backend endpoint service.
-
-If Before GTA 6 feed/login/voting behaves oddly in production:
-- Check browser network for /api/social-login, /api/post-event, /api/beforegta6/posts, /api/beforegta6/vote.
-- If these are 404/failed on Netlify-only hosting, that is expected without a separate Flask backend deployment.
-- Local Flask mode supports these endpoints and writes to gameking.db.
-
-=================================================================
-9) IMPORTANT TECHNICAL CONTEXT FOR FRONTEND FILES
-=================================================================
-
-index.html:
-- Landing page with project circles and links to /tictactoe and /beforegta6.
-- Uses p5.js and background.js for animated background.
-- Defines global constants for assets:
-  - PIXEL_BG_PATH
-  - man_waving
-  - Sheep
-
-tictactoe.html:
-- Contains menu + board UI.
-- Loads tictactoe.js (game logic), tkbackground.js, and style_tictactoe.css.
-- Has matchmaking status UI (waiting count, status indicator).
-
-beforegta6.html:
-- Heavier UI page with feed/panel/modal interactions.
-- Uses style.css + gtastyle.css.
-- Contains substantial inline JS for post rendering, modal behavior, social-login simulation, and create/vote flows.
-- Calls backend endpoints (/api/social-login, /api/post-event, /api/beforegta6/posts, /api/beforegta6/vote).
-- Includes client-side fallback/default post data, but persistent data comes from backend when available.
-
-background.js:
-- p5 sketch for homepage animated background and sprites.
-- Depends on PIXEL_BG_PATH, man_waving, Sheep globals declared in HTML.
-
-tictactoe.js:
-- Full game controller class.
-- Handles single-player, multiplayer matchmaking polling, board updates.
-- Uses localStorage client id key for matchmaking identity.
-
-=================================================================
-10) GIT/DEPLOY COMMANDS USED SUCCESSFULLY
-=================================================================
-
-Quick deploy after edits:
-- git add -A
-- git commit -m "Describe change"
-- git push origin main
-
-Optional local deploy-artifact check before pushing:
+Rule 4: Always verify build before pushing to main:
 - python netlify_build.py
-
-Useful verification commands:
-- git status -sb
-- git log -1 --oneline
-- git ls-files
-
-=================================================================
-11) WHAT NOT TO DO
-=================================================================
-
-- Do not switch Netlify publish directory back to root unless deployment model is redesigned intentionally.
-- Do not revert templates to ../static references.
-- Do not assume Flask-only behavior will match Netlify static output.
-- Do not remove netlify_build.py without replacing it with another valid build pipeline.
-- Do not assume /api/* endpoints work on static Netlify hosting without separately deploying Flask backend.
-
-=================================================================
-12) RECOMMENDED FUTURE IMPROVEMENTS
-=================================================================
-
-1. Add CI check that runs python netlify_build.py on pull requests.
-2. Add a simple script/test that scans templates for ../static usage and fails if found.
-3. Optionally split static-only frontend and Flask backend into separate deployments if multiplayer backend is required publicly.
-4. Consider adding README section "Local Flask vs Netlify static deployment".
-5. Add a production backend deployment target (Render/Fly/Railway/etc.) and point frontend /api calls to that origin.
-6. Add a .gitignore rule and data policy for gameking.db (decide whether DB should be committed, ignored, or replaced by managed DB).
-
-=================================================================
-13) FINAL GUIDANCE TO FUTURE LLM
-=================================================================
-
-If user reports "site is live but looks plain/broken":
-- First suspect static asset path resolution and publish directory mismatch.
-- Verify netlify.toml, netlify_build.py, dist contents, and /static absolute paths.
-- Do minimal, reversible fixes and redeploy quickly.
-
-If user asks for major redesign (especially beforegta6 page):
-- Safe to redesign aggressively, but preserve deployment invariants above.
-- Rebuild dist and validate route + assets before push.
+- git status
 
 End of handoff.

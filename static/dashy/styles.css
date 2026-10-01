@@ -3156,7 +3156,7 @@ select option {
   background: rgba(239, 68, 68, 0.10);
   border: 2px dashed rgba(239, 68, 68, 0.55);
   border-radius: var(--radius);
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -3168,6 +3168,11 @@ select option {
   transition: all 0.18s ease;
   cursor: crosshair;
   text-align: center;
+  pointer-events: none;
+}
+
+.drag-delete-overlay.active {
+  display: flex;
   pointer-events: all;
 }
 

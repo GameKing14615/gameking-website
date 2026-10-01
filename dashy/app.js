@@ -416,10 +416,7 @@ function returnToPin() {
 function clearTransientUi() {
   returnToPin();
   document.querySelector("[data-roster-editor]")?.classList.add("hidden");
-  document.querySelector("[data-roster-delete-zone]")?.classList.remove("active");
-  draggedRosterCell = null;
-  selectedTemplateId = null;
-  document.querySelectorAll(".dragging,.drop-target").forEach((element) => element.classList.remove("dragging", "drop-target"));
+  hideDeleteZones();
 }
 
 function handlePinDigit(digit) {
@@ -845,6 +842,13 @@ function renderRoster() {
   renderCleaningSchedule();
   if (!grid) return;
   renderTemplates();
+  if (!draggedRosterCell) {
+    const deleteZone = document.querySelector("[data-roster-delete-zone]");
+    if (deleteZone) {
+      deleteZone.classList.add("hidden");
+      deleteZone.classList.remove("active", "drop-target");
+    }
+  }
 }
 function observeRosterSizes() {
   const rosters = [
@@ -936,7 +940,7 @@ function navigate(pageName) {
   if (target !== "attendance") returnToPin();
   if (target !== "roster") {
     document.querySelector("[data-roster-editor]")?.classList.add("hidden");
-    document.querySelector("[data-roster-delete-zone]")?.classList.remove("active");
+    hideDeleteZones();
   }
   if (target === "attendance") { renderAttendance(); renderNepaliCalendar(); }
   if (target === "dashboard") renderNepaliCalendar();
@@ -1268,6 +1272,28 @@ let draggedRosterCell = null;
 let draggedTemplate = null;
 let selectedTemplateId = null;
 let lastDeletedRoster = null;
+
+function hideDeleteZones() {
+  draggedRosterCell = null;
+  draggedTemplate = null;
+  selectedTemplateId = null;
+
+  document.querySelectorAll(".dragging").forEach((el) => el.classList.remove("dragging"));
+  document.querySelectorAll(".drop-target").forEach((el) => el.classList.remove("drop-target"));
+
+  const deleteZone = document.querySelector("[data-roster-delete-zone]");
+  if (deleteZone) {
+    deleteZone.classList.add("hidden");
+    deleteZone.classList.remove("active", "drop-target");
+  }
+
+  const cleaningDeleteZone = document.querySelector("[data-cleaning-delete-zone]");
+  if (cleaningDeleteZone) {
+    cleaningDeleteZone.classList.add("hidden");
+    cleaningDeleteZone.classList.remove("active", "drop-target");
+  }
+}
+
 function setRosterItem(staffId, date, value) {
   const key = weekKey(); const list = rosterDrafts[key] || [];
   const index = list.findIndex((x) => x.staffId === staffId && x.date === date);
@@ -1322,21 +1348,8 @@ document.addEventListener("dragstart", (event) => {
   deleteZone?.classList.remove("hidden");
   deleteZone?.classList.add("active");
 });
-document.addEventListener("dragend", (event) => {
-  event.target.closest("[data-cleaning-staff-id]")?.classList.remove("dragging");
-  event.target.closest("[data-cleaning-drop]")?.classList.remove("dragging");
-  event.target.closest("[data-roster-staff]")?.classList.remove("dragging");
-  draggedRosterCell = null;
-  draggedTemplate = null;
-  selectedTemplateId = null;
-  const deleteZone = document.querySelector("[data-roster-delete-zone]");
-  deleteZone?.classList.add("hidden");
-  deleteZone?.classList.remove("active");
-  deleteZone?.classList.remove("drop-target");
-  const cleaningDeleteZone = document.querySelector("[data-cleaning-delete-zone]");
-  cleaningDeleteZone?.classList.add("hidden");
-  cleaningDeleteZone?.classList.remove("active", "drop-target");
-  document.querySelectorAll(".drop-target").forEach((x) => x.classList.remove("drop-target"));
+document.addEventListener("dragend", () => {
+  hideDeleteZones();
 });
 document.addEventListener("dragover", (event) => {
   const cleaningTarget = event.target.closest("[data-cleaning-drop]");
@@ -1378,6 +1391,7 @@ document.addEventListener("drop", (event) => {
   if (cleaningDeleteZone && isAdmin && transfer.startsWith("cleaning-assignment:")) {
     event.preventDefault();
     const [, sourceShift, sourceDay] = transfer.split(":");
+    hideDeleteZones();
     const wk = cleaningWeekKey();
     const sourceIndex = Number(sourceDay);
     const removed = cleaningSchedule[wk]?.[sourceShift]?.[sourceIndex] || "";
@@ -1392,6 +1406,7 @@ document.addEventListener("drop", (event) => {
   if (cleaningTarget && isAdmin && transfer.startsWith("cleaning-staff:")) {
     event.preventDefault();
     const staffId = Number(transfer.split(":")[1]);
+    hideDeleteZones();
     const person = staff.find((entry) => entry.id === staffId);
     if (!person) return;
     const wk = cleaningWeekKey();
@@ -1407,6 +1422,7 @@ document.addEventListener("drop", (event) => {
     const targetShift = cleaningTarget.dataset.cleaningShift;
     const targetDay = Number(cleaningTarget.dataset.cleaningDay);
     const sourceIndex = Number(sourceDay);
+    hideDeleteZones();
     const wk = cleaningWeekKey();
     const sourceValue = cleaningSchedule[wk]?.[sourceShift]?.[sourceIndex] || "";
     if (sourceShift === targetShift && sourceIndex === targetDay) return;
@@ -1421,7 +1437,9 @@ document.addEventListener("drop", (event) => {
   const deleteZone = event.target.closest("[data-roster-delete-zone]");
   if (deleteZone && isAdmin && draggedRosterCell) {
     event.preventDefault();
-    const item = (rosterDrafts[weekKey()] || []).find((x) => x.staffId === draggedRosterCell.staffId && x.date === draggedRosterCell.date);
+    const itemToDelete = draggedRosterCell;
+    hideDeleteZones();
+    const item = (rosterDrafts[weekKey()] || []).find((x) => x.staffId === itemToDelete.staffId && x.date === itemToDelete.date);
     if (item) {
       setRosterItem(item.staffId, item.date, { staffId: item.staffId, date: item.date, type: "clear", start: "", end: "", note: "" });
       renderRoster();
@@ -1430,28 +1448,42 @@ document.addEventListener("drop", (event) => {
     return;
   }
   const target = event.target.closest("[data-roster-staff]");
-  if (!target || !isAdmin) return;
+  if (!target || !isAdmin) {
+    hideDeleteZones();
+    return;
+  }
   if (draggedTemplate) {
     event.preventDefault();
-    setRosterItem(Number(target.dataset.rosterStaff), target.dataset.rosterDate, { staffId: Number(target.dataset.rosterStaff), date: target.dataset.rosterDate, type: "shift", start: draggedTemplate.start, end: draggedTemplate.end, note: draggedTemplate.name });
+    const template = draggedTemplate;
+    hideDeleteZones();
+    setRosterItem(Number(target.dataset.rosterStaff), target.dataset.rosterDate, { staffId: Number(target.dataset.rosterStaff), date: target.dataset.rosterDate, type: "shift", start: template.start, end: template.end, note: template.name });
     renderRoster();
     return;
   }
   if (draggedRosterCell) {
     event.preventDefault();
+    const sourceCell = draggedRosterCell;
     const targetStaff = Number(target.dataset.rosterStaff);
     const targetDate = target.dataset.rosterDate;
-    if (draggedRosterCell.staffId === targetStaff && draggedRosterCell.date === targetDate) {
-      return; // Bug 1 fix: Dropped back into the same cell, do nothing
+    hideDeleteZones();
+    if (sourceCell.staffId === targetStaff && sourceCell.date === targetDate) {
+      return; // Dropped back into the same cell, do nothing
     }
     const list = rosterDrafts[weekKey()] || [];
-    const source = list.find((x) => x.staffId === draggedRosterCell.staffId && x.date === draggedRosterCell.date);
+    const source = list.find((x) => x.staffId === sourceCell.staffId && x.date === sourceCell.date);
     if (source) {
       setRosterItem(targetStaff, targetDate, { ...source, staffId: targetStaff, date: targetDate });
-      setRosterItem(draggedRosterCell.staffId, draggedRosterCell.date, { staffId: draggedRosterCell.staffId, date: draggedRosterCell.date, type: "clear", start: "", end: "", note: "" });
+      setRosterItem(sourceCell.staffId, sourceCell.date, { staffId: sourceCell.staffId, date: sourceCell.date, type: "clear", start: "", end: "", note: "" });
       renderRoster();
       showToast("Roster assignment moved.");
     }
+    return;
+  }
+  hideDeleteZones();
+});
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    hideDeleteZones();
   }
 });
 document.querySelector("[data-staff-manager-form]")?.addEventListener("submit", (event) => { event.preventDefault(); const id = Number(document.querySelector("#manager-staff-id").value); const name = document.querySelector("#manager-staff-name").value.trim(); const role = document.querySelector("#manager-staff-role").value.trim(); const pin = document.querySelector("#manager-staff-pin").value.trim(); if (!/^\d{4}$/.test(pin)) { showToast("PIN must be exactly four digits."); return; } if (staff.some((x) => x.id !== id && x.pin === pin)) { showToast("PINs must be unique. Choose another four-digit PIN."); return; } staff = staff.map((x) => x.id === id ? { ...x, name, role, pin } : x); saveStaff(); renderStaffManager(); renderAttendance(); showToast("Staff profile saved."); });

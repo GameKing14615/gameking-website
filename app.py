@@ -280,18 +280,25 @@ class GameRoom:
             'draw': not self.game_active and self.winner is None
         }
 
-# Routes for single player
+# Routes for pages
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/tictactoe')
+@app.route('/tictactoe', strict_slashes=False)
+@app.route('/tictactoe.html')
 def tictactoe():
     return render_template('tictactoe.html')
 
-@app.route('/beforegta6')
+@app.route('/beforegta6', strict_slashes=False)
+@app.route('/beforegta6.html')
 def beforegta6():
     return render_template('beforegta6.html')
+
+@app.route('/dashy', strict_slashes=False)
+@app.route('/dashy.html')
+def dashy():
+    return render_template('dashy.html')
 
 # === Multiplayer Game Routes ===
 

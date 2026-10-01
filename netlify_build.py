@@ -37,6 +37,14 @@ def build_dashy() -> None:
         cwd=DASHY_ROOT,
         check=True,
     )
+    # Sync with Flask source directories
+    shutil.copy2(DASHY_DEPLOY / "dashy.html", TEMPLATES / "dashy.html")
+    shutil.copytree(
+        DASHY_DEPLOY / "static" / "dashy",
+        STATIC / "dashy",
+        dirs_exist_ok=True,
+    )
+    # Sync with Netlify dist/ output
     shutil.copy2(DASHY_DEPLOY / "dashy.html", DIST / "dashy.html")
     dashy_directory = DIST / "dashy"
     dashy_directory.mkdir(parents=True, exist_ok=True)
