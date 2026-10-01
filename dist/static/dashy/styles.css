@@ -141,6 +141,31 @@ a {
   margin-left: 16px;
 }
 
+.home-button {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--navy);
+  font-size: 24px;
+  line-height: 1;
+  text-decoration: none;
+  transition: all 0.18s ease;
+  flex: none;
+  margin-right: 8px;
+}
+
+.home-button:hover,
+.home-button:focus-visible {
+  background: var(--mint);
+  border-color: var(--teal);
+  color: var(--navy);
+  outline: none;
+}
+
 .brand strong {
   color: var(--teal);
   font-weight: 800;
