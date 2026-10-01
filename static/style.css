@@ -14,6 +14,7 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
+    background: #1a1a1a url("/static/images/pixelbg.png") center top / cover fixed no-repeat;
 }
 
 /* Styles for the background canvas */
@@ -23,7 +24,15 @@ body {
     left: 0;
     width: 100%; /* Full width of its parent (body) */
     height: 100%; /* Full height of its parent (body) */
-    z-index: -1; /* Puts it behind all other content */
+    z-index: 0; /* Keep the animated canvas behind the page content. */
+    pointer-events: none;
+}
+
+header,
+main,
+footer {
+    position: relative;
+    z-index: 1;
 }
 
 header {

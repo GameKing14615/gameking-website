@@ -38,6 +38,9 @@ def build_dashy() -> None:
         check=True,
     )
     shutil.copy2(DASHY_DEPLOY / "dashy.html", DIST / "dashy.html")
+    dashy_directory = DIST / "dashy"
+    dashy_directory.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(DASHY_DEPLOY / "dashy.html", dashy_directory / "index.html")
     shutil.copytree(
         DASHY_DEPLOY / "static" / "dashy",
         DIST / "static" / "dashy",
