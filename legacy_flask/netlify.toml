@@ -1,9 +1,7 @@
-# Netlify Configuration for Next.js 15
+# Netlify configuration for GameKing website
 [build]
-  command = "npm run build"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+  publish = "dist"
+  command = "python netlify_build.py"
 
 [[redirects]]
   from = "/tictactoe"

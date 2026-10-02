@@ -1,0 +1,174 @@
+
+    <div class="layout">
+        <aside class="sidebar" aria-label="Primary">
+            <a href="/" class="logo" title="Go to home">
+                <img src="/static/images/gameking_logo_1.png" alt="GameKing" />
+            </a>
+            <button class="active" title="Popular" data-tab="popular">⭐ Popular</button>
+            <button title="Latest" data-tab="latest">📄 Latest</button>
+            <button title="Trending" data-tab="trending">🔥 Trending</button>
+            <button class="button-primary" id="createBtn" type="button">➕ Create</button>
+        </aside>
+
+        <header class="topbar">
+            <div class="brand">
+                <img src="/static/images/beforegta6.jpg" alt="Before GTA 6" />
+                <span>BEFORE GTA 6</span>
+            </div>
+
+            <div class="search">
+                <span class="search-icon">🔍</span>
+                <input type="search" id="searchInput" placeholder="Search" />
+            </div>
+
+            <div class="actions">
+                <button class="mode-toggle" id="modeToggle" title="Toggle dark/light mode" aria-label="Toggle dark and light mode">🌙</button>
+                <button class="button-secondary" id="loginBtn">LOG IN</button>
+                <button class="button-primary" id="signUpBtn">SIGN UP</button>
+            </div>
+        </header>
+
+        <main class="content" id="mainContent">
+            <nav class="nav-row" aria-label="Primary navigation">
+                <div class="nav-links">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle active" data-tab="popular">POPULAR ▾</button>
+                        <div class="dropdown-menu">
+                            <button class="active" data-tab="popular">POPULAR</button>
+                            <button data-tab="latest">LATEST POSTS</button>
+                            <button data-tab="trending">TRENDING</button>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" data-tab="category">CATEGORY ▾</button>
+                        <div class="dropdown-menu">
+                            <button data-tab="science">Science</button>
+                            <button data-tab="movie">Movie & TV</button>
+                            <button data-tab="entertainment">Entertainment</button>
+                            <button data-tab="news">NEWS</button>
+                            <button data-tab="youtube">Youtube</button>
+                            <button data-tab="gaming">Gaming</button>
+                            <button data-tab="medicine">Medicine</button>
+                            <button data-tab="politics">Politics</button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="grid" id="postGrid">
+                <!-- Posts injected by JS -->
+            </div>
+
+            <div class="scroll-hint">Infinite Scroll ⟲</div>
+        </main>
+
+        <aside class="sidebar-right" id="sidebarRight">
+            <div class="panel">
+                <h3>Trending Memes</h3>
+                <div class="chip">#FlyingCars</div>
+                <div class="chip">#AI_Toasters</div>
+                <div class="chip">#VR_Gaming</div>
+                <div class="chip">#VO_Comment</div>
+            </div>
+
+            <div class="panel">
+                <h3>Leaderboard</h3>
+                <div class="leaderboard">
+                    <div class="leader"><span>1. <strong>MemeLord99</strong></span><span class="score">2298</span></div>
+                    <div class="leader"><span>2. <strong>Gamer_Life</strong></span><span class="score">263</span></div>
+                    <div class="leader"><span>3. <strong>VirnDamin</strong></span><span class="score">790</span></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Community Poll</h3>
+                <p style="margin: 0 0 12px; color: rgba(233, 238, 247, 0.6);">Which will come first?</p>
+                <div class="poll" id="pollChoices">
+                    <button data-value="gta6">GTA 6</button>
+                    <button data-value="fusion">Commercial Fusion Energy</button>
+                </div>
+                <div class="results" id="pollResults">No votes yet.</div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="modal" id="createModal" aria-hidden="true">
+        <div class="modal-backdrop" data-close="true"></div>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="createModalTitle">
+            <header class="modal-header">
+                <h2 id="createModalTitle">Create a Post</h2>
+                <button class="modal-close" type="button" aria-label="Close">✕</button>
+            </header>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="postImageInput">Image or GIF</label>
+                    <input id="postImageInput" type="file" accept="image/*,image/gif" hidden />
+                    <div class="upload-dropzone" id="uploadDropzone" role="button" tabindex="0" aria-label="Upload image or gif">
+                        <img id="uploadPreview" class="upload-preview" alt="Selected upload preview" />
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <div class="photo-icon">🖼️</div>
+                            <strong>Drop image/GIF here</strong>
+                            <span>or click to upload from your PC</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="postTitle">Title</label>
+                    <div class="title-row">
+                        <span class="title-chip fixed">WE GOT</span>
+                        <input id="postTitle" maxlength="250" placeholder="YOUR TITLE HERE" />
+                        <span class="title-chip fixed">BEFORE GTA 6</span>
+                    </div>
+                    <div class="help-text"><span id="titleCount">0</span>/250</div>
+                </div>
+                <div class="form-group">
+                    <label for="postDescription">Description</label>
+                    <textarea id="postDescription" rows="4" placeholder="Write a short description..." maxlength="250"></textarea>
+                    <div class="help-text"><span id="descCount">0</span>/250</div>
+                    <div class="modal-error" id="formError"></div>
+                </div>
+                <div class="form-group">
+                    <label>Categories (max 3)</label>
+                    <div class="tag-list" id="tagList"></div>
+                    <div class="help-text">Select up to 3 tags.</div>
+                </div>
+            </div>
+            <footer class="modal-footer">
+                <button type="button" class="button-secondary" id="cancelCreate">Cancel</button>
+                <button type="button" class="button-primary" id="submitCreate">Create</button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Action completed</div>
+
+    <div class="auth-sheet" id="authSheet" aria-hidden="true">
+        <div class="auth-card">
+            <h3>Connect Account</h3>
+            <p style="margin-top: 0; color: rgba(245, 240, 255, 0.78);">Pick a provider to continue.</p>
+            <div class="auth-grid">
+                <button class="auth-option" data-provider="google">Google</button>
+                <button class="auth-option" data-provider="twitter">Twitter / X</button>
+                <button class="auth-option" data-provider="facebook">Facebook</button>
+                <button class="auth-option" data-provider="reddit">Reddit</button>
+            </div>
+            <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+                <button class="button-secondary" id="closeAuthSheet">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="username-modal" id="usernameModal" aria-hidden="true">
+        <div class="username-box">
+            <button class="modal-close username-close" id="closeUsernameModal" type="button" aria-label="Close username popup">✕</button>
+            <h3>Choose Your Username</h3>
+            <p style="margin-top:0; color: rgba(245, 240, 255, 0.78);">This will appear on your posts and comments.</p>
+            <input id="usernameInput" maxlength="32" placeholder="Enter username" style="width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(145, 215, 255, 0.35); background:rgba(255,255,255,0.06); color:#fff; outline:none;" />
+            <div class="modal-error" id="usernameError" style="margin-top:8px;"></div>
+            <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+                <button class="button-primary" id="saveUsernameBtn">Save Username</button>
+            </div>
+        </div>
+    </div>
+
+    

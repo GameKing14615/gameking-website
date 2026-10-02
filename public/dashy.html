@@ -1,0 +1,1614 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="darkreader-lock" />
+    <meta name="theme-color" content="#16324f" />
+    <meta name="description" content="Dashy by TNH internal business dashboard" />
+    <link rel="stylesheet" href="/static/dashy/styles.css" />
+    <script>
+      document.documentElement.dataset.theme = localStorage.getItem("dashy-theme") || "dark";
+    </script>
+    <title>Dashy by TNH</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a
+  class="home-button"
+  href="/"
+  aria-label="Go to GameKing homepage"
+  title="GameKing homepage"
+>⌂</a>
+        <button class="menu-button" data-action="toggle-sidebar" aria-label="Open navigation">☰</button>
+        <a
+          class="brand"
+          href="#dashboard"
+          data-page="dashboard"
+          aria-label="Dashy by TNH home"
+        >
+          <span class="brand-mark" aria-hidden="true">
+            <img class="brand-icon" src="/static/dashy/dashy-icon.svg" alt="" />
+          </span>
+          <span>
+            Dashy
+            <strong>by TNH</strong>
+          </span>
+        </a>
+        <div class="topbar-actions">
+          <div class="network-badge is-online" data-network-badge title="Network status: Online">
+            <span class="network-indicator">
+              <span class="network-ping"></span>
+              <span class="network-core"></span>
+            </span>
+            <span class="network-text" data-network-text>Online</span>
+          </div>
+          <button
+            class="theme-toggle"
+            data-action="toggle-theme"
+            type="button"
+            aria-label="Switch to light mode"
+          >
+            <span class="theme-toggle-icon">☼</span>
+            <span data-theme-label>Light mode</span>
+          </button>
+          <button class="admin-login-button" data-action="open-admin-login" aria-label="Admin login">
+            <span>⚿</span>
+            Admin Login
+          </button>
+        </div>
+      </header>
+      <aside class="sidebar" data-sidebar>
+        <nav aria-label="Main navigation">
+          <p class="nav-label">Workspace</p>
+          <a href="#dashboard" data-page="dashboard" class="nav-link">
+            <span>⌂</span>
+            Dashboard
+          </a>
+          <a href="#attendance" data-page="attendance" class="nav-link">
+            <span>◷</span>
+            Attendance
+          </a>
+          <a href="#roster" data-page="roster" class="nav-link">
+            <span>▦</span>
+            Roster
+          </a>
+          <a href="#vendors" data-page="vendors" class="nav-link">
+            <span>◇</span>
+            Vendors
+          </a>
+          <a href="#user-management" data-page="user-management" class="nav-link admin-only hidden">
+            <span>⊳</span>
+            User Management
+          </a>
+          <p class="nav-label nav-label-spaced">Support</p>
+          <a href="#help" data-page="help" class="nav-link">
+            <span>?</span>
+            Help Guide
+          </a>
+          <a href="#system-log" data-page="system-log" class="nav-link admin-only hidden">
+            <span>⚙</span>
+            System Log
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="user-card">
+            <span class="avatar small">S</span>
+            <div>
+              <strong data-workspace-label>Staff workspace</strong>
+              <small data-role-label>Staff access</small>
+            </div>
+          </div>
+          <button class="sidebar-help" data-page="help">
+            Need a hand?
+            <span>→</span>
+          </button>
+        </div>
+      </aside>
+      <main class="main-content">
+        <div class="page" data-view="dashboard">
+          <section class="page-heading">
+            <div>
+              <p class="eyebrow" data-current-date>Today in Pokhara</p>
+              <h1 data-greeting-h1>
+                Good morning, TNH
+                <span class="wave">😀</span>
+              </h1>
+              <p class="muted">Here’s what is happening across your business today.</p>
+            </div>
+            <button class="button primary" data-page="attendance">+ Clock in</button>
+          </section>
+          <section class="metric-grid" aria-label="Business summary">
+            <article class="metric-card">
+              <div class="metric-icon blue">
+                ◷
+              </div>
+              <div>
+                <p>Present today</p>
+                <strong>
+                  8
+                  <small>/ 10 staff</small>
+                </strong>
+                <span class="trend positive">
+                  ↑ 12%
+                  <em>vs last week</em>
+                </span>
+              </div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-icon green">
+                ↗
+              </div>
+              <div>
+                <p>Sales today</p>
+                <strong>Rs 2,840</strong>
+                <span class="trend positive">
+                  ↑ 8.4%
+                  <em>vs yesterday</em>
+                </span>
+              </div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-icon amber">
+                ▦
+              </div>
+              <div>
+                <p>On the roster</p>
+                <strong>
+                  12
+                  <small>shifts</small>
+                </strong>
+                <span class="trend neutral">Next 7 days</span>
+              </div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-icon purple">
+                ◇
+              </div>
+              <div>
+                <p>Open vendor tasks</p>
+                <strong>4</strong>
+                <span class="trend warning">2 need attention</span>
+              </div>
+            </article>
+          </section>
+          <section class="content-grid">
+            <article class="panel chart-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Sales overview</h2>
+                  <p class="muted" data-sales-caption>Sales today · dummy data</p>
+                </div>
+                <select aria-label="Sales period" data-sales-filter>
+                  <option value="today">Today</option>
+                  <option value="week">Last 7 days</option>
+                  <option value="month">This month</option>
+                  <option value="year">This year</option>
+                </select>
+              </div>
+              <div class="chart" role="img" aria-label="Sales chart with dummy data">
+                <div class="chart-y">
+                  <span data-chart-max>Rs 3k</span>
+                  <span>Rs 2k</span>
+                  <span>Rs 1k</span>
+                  <span>Rs 0</span>
+                </div>
+                <svg viewBox="0 0 640 220" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient
+                      id="area"
+                      x1="0"
+                      x2="0"
+                      y1="0"
+                      y2="1"
+                    >
+                      <stop offset="0" stop-color="#72d6ba" stop-opacity=".35"/>
+                      <stop offset="1" stop-color="#72d6ba" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path class="chart-area" data-chart-area d="M0 175 C55 160 72 168 112 140 S180 126 214 145 S274 130 310 106 S367 118 405 82 S460 100 500 65 S560 58 640 25 V220 H0Z"/>
+                  <path class="chart-line" data-chart-line d="M0 175 C55 160 72 168 112 140 S180 126 214 145 S274 130 310 106 S367 118 405 82 S460 100 500 65 S560 58 640 25"/>
+                </svg>
+                <div class="chart-x" data-chart-labels>
+                  <span>8am</span>
+                  <span>10am</span>
+                  <span>12pm</span>
+                  <span>2pm</span>
+                  <span>4pm</span>
+                  <span>6pm</span>
+                  <span>8pm</span>
+                </div>
+              </div>
+            </article>
+            <article class="panel today-attendance-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Today’s attendance</h2>
+                  <p class="muted" data-dashboard-attendance-count>0 people are currently in</p>
+                </div>
+                <button class="button secondary tiny-action" data-page="attendance" aria-label="Open full attendance">Open Full Attendance</button>
+              </div>
+              <div class="staff-list" data-dashboard-attendance-list></div>
+              <button class="button secondary full-width" data-action="toggle-attendance-more">Show More</button>
+            </article>
+          </section>
+          <section class="panel published-roster-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Published roster</h2>
+                <p class="muted">Live Sunday–Saturday assignments for the whole team</p>
+              </div>
+              <button class="button secondary" data-page="roster">Open full roster</button>
+            </div>
+            <div class="roster-toolbar compact">
+              <button class="icon-button" data-roster-week="prev" aria-label="Previous week">‹</button>
+              <strong data-dashboard-roster-week-label></strong>
+              <button class="icon-button" data-roster-week="next" aria-label="Next week">›</button>
+            </div>
+            <div class="roster-grid dashboard-roster-grid" data-dashboard-roster-grid></div>
+          </section>
+          <section class="panel nepali-calendar-panel">
+            <div class="calendar-toolbar">
+              <button class="icon-button" data-calendar-action="prev" aria-label="Previous month">‹</button>
+              <div class="calendar-title-wrap">
+                <button class="calendar-title-button" data-calendar-action="picker">
+                  <h2 data-bs-title>भदौ (Bhadra) २०८३</h2>
+                </button>
+                <p class="calendar-equivalent" data-bs-equivalent>Aug/Sep 2026</p>
+                <div class="calendar-picker hidden" data-calendar-picker>
+                  <div>
+                    <select data-picker-month></select>
+                    <select data-picker-year></select>
+                  </div>
+                  <div class="picker-days" data-picker-days></div>
+                </div>
+              </div>
+              <button class="icon-button" data-calendar-action="next" aria-label="Next month">›</button>
+              <div class="calendar-actions">
+                <button class="button secondary" data-calendar-action="today">Today</button>
+              </div>
+            </div>
+            <div class="calendar-weekdays">
+              <span>Sun</span>
+              <span>Mon</span>
+              <span>Tue</span>
+              <span>Wed</span>
+              <span>Thu</span>
+              <span>Fri</span>
+              <span>Sat</span>
+            </div>
+            <div class="nepali-calendar-grid" data-nepali-calendar></div>
+          </section>
+        </div>
+        <div class="page hidden" data-view="attendance">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Staff workspace</p>
+              <h1>Staff Attendance Login</h1>
+              <p class="muted">Enter your personal PIN, then choose the action you need.</p>
+            </div>
+            <div class="attendance-heading-actions">
+              <span class="staff-mode-badge" data-mode-badge>Staff view</span>
+            </div>
+          </div>
+          <section class="attendance-command">
+            <div class="attendance-login-card">
+              <div class="attendance-login-icon">
+                ⌕
+              </div>
+              <h2>Enter your PIN</h2>
+              <div class="pin-dots" data-pin-dots>
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i>
+              </div>
+              <p class="pin-error hidden" data-pin-error>Incorrect PIN. Try again.</p>
+              <div class="keypad">
+                <button data-pin="1">1</button>
+                <button data-pin="2">2</button>
+                <button data-pin="3">3</button>
+                <button data-pin="4">4</button>
+                <button data-pin="5">5</button>
+                <button data-pin="6">6</button>
+                <button data-pin="7">7</button>
+                <button data-pin="8">8</button>
+                <button data-pin="9">9</button>
+                <span></span>
+                <button data-pin="0">0</button>
+                <button data-action="clear-pin">⌫</button>
+              </div>
+              <small class="prototype-label">Hint: try 1111, 2222, 3333, or 4444</small>
+              <div class="pin-actions hidden" data-pin-actions>
+                <button class="pin-back-button" data-action="back-to-pin" aria-label="Back to PIN">&#8592;</button>
+                <div class="pin-user-header" data-pin-user-header>
+                  <span class="avatar" data-pin-user-avatar></span>
+                  <div class="pin-user-info">
+                    <strong data-pin-user-name></strong>
+                    <small data-pin-user-role></small>
+                  </div>
+                </div>
+                <button class="attendance-action clockin-action" data-staff-action="primary">
+                  <span class="action-icon">&#9200;</span>
+                  <span>Clock in</span>
+                  <small>Start your shift</small>
+                </button>
+                <button class="attendance-action break-action" data-staff-action="break">
+                  <span class="action-icon">&#9749;</span>
+                  <span>Break</span>
+                  <small>Pause briefly</small>
+                </button>
+                <button class="attendance-action clockout-action" data-staff-action="clockout">
+                  <span class="action-icon">&#8618;</span>
+                  <span>Clock out</span>
+                  <small>End your shift</small>
+                </button>
+                <button class="attendance-action leave-action" data-staff-action="leave">
+                  <span class="action-icon">&#128197;</span>
+                  <span>Request leave</span>
+                  <small>Plan time away</small>
+                </button>
+                <div class="pin-actions-footer">
+                  <button type="button" class="button finish-session-green" data-action="finish-staff-session">Finish / Switch employee</button>
+                </div>
+                <form class="leave-form leave-form-inline hidden" data-leave-form>
+                  <div class="leave-form-heading">
+                    <strong>Request leave</strong>
+                    <button
+  type="button"
+  class="leave-close-button"
+  data-action="close-leave"
+  aria-label="Close leave request"
+>&times;</button>
+                  </div>
+                  <label for="leave-date">Date needed</label>
+                  <input id="leave-date" type="date" required />
+                  <label for="leave-reason">Reason (optional)</label>
+                  <input id="leave-reason" type="text" placeholder="e.g. appointment" />
+                  <div class="leave-form-actions">
+                    <button class="button secondary" type="button" data-action="close-leave">Cancel</button>
+                    <button class="button whatsapp-button" type="submit">Send via WhatsApp</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="floor-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Live Floor Status</h2>
+                  <p class="muted">Who is currently in the building</p>
+                </div>
+                <span class="live-label">
+                  <i></i>
+                  Live
+                </span>
+              </div>
+              <div class="floor-list" data-floor-list></div>
+            </div>
+          </section>
+          <section class="panel staff-action-panel hidden" data-staff-action-panel>
+            <div class="selected-person">
+              <span class="avatar" data-selected-avatar></span>
+              <div>
+                <strong data-selected-name></strong>
+                <small data-selected-role></small>
+              </div>
+            </div>
+            <button class="text-button" data-action="open-profile">Edit Profile</button>
+            <form class="profile-form hidden" data-profile-form>
+              <button
+  class="profile-close-button"
+  type="button"
+  data-action="close-profile"
+  aria-label="Close edit profile"
+>x</button>
+              <label for="profile-name">Display name</label>
+              <input id="profile-name" required />
+              <label>Choose an icon</label>
+              <div class="icon-picker" data-icon-picker></div>
+              <label for="profile-pin">PIN / password</label>
+              <input
+                id="profile-pin"
+                inputmode="numeric"
+                pattern="[0-9]{4}"
+                maxlength="4"
+                required
+              />
+              <div>
+                <button class="button secondary" type="button" data-action="close-profile">Cancel</button>
+                <button class="button primary" type="submit">Save profile</button>
+              </div>
+            </form>
+          </section>
+          <section class="panel nepali-calendar-panel">
+            <div class="calendar-toolbar">
+              <button class="icon-button" data-calendar-action="prev" aria-label="Previous month">‹</button>
+              <div class="calendar-title-wrap">
+                <button class="calendar-title-button" data-calendar-action="picker">
+                  <h2 data-bs-title>भदौ (Bhadra) २०८३</h2>
+                </button>
+                <p class="calendar-equivalent" data-bs-equivalent>Aug/Sep 2026</p>
+                <div class="calendar-picker hidden" data-calendar-picker>
+                  <div>
+                    <select data-picker-month></select>
+                    <select data-picker-year></select>
+                  </div>
+                  <div class="picker-days" data-picker-days></div>
+                </div>
+              </div>
+              <button class="icon-button" data-calendar-action="next" aria-label="Next month">›</button>
+              <div class="calendar-actions">
+                <button class="button secondary" data-calendar-action="today">Today</button>
+              </div>
+            </div>
+            <div class="calendar-weekdays">
+              <span>Sun</span>
+              <span>Mon</span>
+              <span>Tue</span>
+              <span>Wed</span>
+              <span>Thu</span>
+              <span>Fri</span>
+              <span>Sat</span>
+            </div>
+            <div class="nepali-calendar-grid" data-nepali-calendar></div>
+          </section>
+          <section class="panel admin-controls-panel admin-only hidden">
+            <div>
+              <p class="eyebrow">Administrator controls</p>
+              <h2>Manage attendance and staff profiles</h2>
+              <p class="muted">Manage names, roles and unique PINs from the secured tools.</p>
+            </div>
+            <div class="admin-control-actions">
+              <button class="button secondary" data-action="open-attendance-override" data-calendar-action="today">Manage today’s attendance</button>
+            </div>
+            <form class="attendance-settings-form" data-attendance-settings-form>
+              <label for="attendance-qualification-value">
+                Auto-add staff icon after
+                <div class="attendance-time-fields">
+                  <input
+                    id="attendance-qualification-value"
+                    data-attendance-qualification-value
+                    type="number"
+                    min="1"
+                    max="1440"
+                    step="1"
+                  >
+                  <select id="attendance-qualification-unit" data-attendance-qualification-unit>
+                    <option value="instant">Instant</option>
+                    <option value="seconds">Seconds</option>
+                    <option value="minutes">Minutes</option>
+                  </select>
+                </div>
+                <small>Instant adds the icon immediately. Default: 1 minute.</small>
+              </label>
+              <button class="button primary" type="submit">Save timing</button>
+            </form>
+            <div class="staff-manager hidden" data-staff-manager>
+              <div class="panel-heading">
+                <h3>Staff profiles</h3>
+                <button class="icon-button" data-action="close-staff-manager">&lt;</button>
+              </div>
+              <form class="staff-manager-form" data-staff-manager-form>
+                <input type="hidden" id="manager-staff-id">
+                <label>
+                  Name
+                  <input id="manager-staff-name" required>
+                </label>
+                <label>
+                  Role
+                  <input id="manager-staff-role" required>
+                </label>
+                <label>
+                  Unique 4-digit PIN
+                  <input
+                    id="manager-staff-pin"
+                    inputmode="numeric"
+                    pattern="[0-9]{4}"
+                    maxlength="4"
+                    required
+                  >
+                </label>
+                <button class="button primary" type="submit">Save staff</button>
+              </form>
+              <div data-staff-manager-list></div>
+            </div>
+          </section>
+        </div>
+        <div class="page hidden" data-view="roster">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Planning & Schedules</p>
+              <h1>Weekly Roster</h1>
+              <p class="muted">
+                Published Sunday–Saturday assignments are visible to all staff. Administrators can customize and publish shifts.
+              </p>
+            </div>
+            <div class="roster-actions admin-only hidden">
+              <button class="button secondary" data-action="copy-published-to-draft" title="Copy published roster into this week's draft">Copy Published</button>
+              <button class="button secondary" data-action="save-roster-draft">Save Draft</button>
+              <button class="button primary" data-action="publish-roster">Final Publish</button>
+            </div>
+          </div>
+          <section class="panel roster-panel">
+            <div class="roster-toolbar">
+              <div class="roster-nav-group">
+                <button class="icon-button" data-roster-week="prev" aria-label="Previous week">‹</button>
+                <strong data-roster-week-label></strong>
+                <button class="icon-button" data-roster-week="next" aria-label="Next week">›</button>
+              </div>
+              <div class="roster-meta-group">
+                <span class="roster-state" data-roster-state></span>
+                <button class="button secondary tiny-action admin-only hidden" data-action="reset-week-draft" title="Clear assignments for this week">Clear Draft</button>
+              </div>
+            </div>
+            <div class="roster-studio">
+              <div class="roster-table-wrap">
+                <div class="roster-grid" data-roster-grid></div>
+                <div class="roster-legend">
+                  <span>
+                    <i class="legend-shift"></i>
+                    Shift (12h format)
+                  </span>
+                  <span>
+                    <i class="legend-holiday"></i>
+                    Holiday / Day Off
+                  </span>
+                  <span class="legend-hint admin-only hidden">💡 Click any cell to open inspector or drag templates</span>
+                </div>
+              </div>
+              <aside class="roster-planning admin-only hidden" data-roster-planning>
+                <!-- Studio Header -->
+                <div class="studio-header">
+                  <div class="studio-title-row">
+                    <span class="studio-badge">Roster Studio</span>
+                    <span class="studio-shortcut-hint">Draft Mode</span>
+                  </div>
+                  <p class="muted studio-desc">Click any cell to edit or drag templates to assign.</p>
+                </div>
+                <!-- Interactive Cell Inspector / Editor -->
+                <div class="roster-editor-container" data-roster-editor-container>
+                  <div class="editor-placeholder" data-editor-placeholder>
+                    <div class="editor-empty-icon">
+                      📅
+                    </div>
+                    <h4>Select a cell to edit</h4>
+                    <p>Click any shift cell in the table to customize hours, mark time off, or clear.</p>
+                  </div>
+                  <div class="roster-editor hidden" data-roster-editor>
+                    <div class="editor-header">
+                      <div class="editor-staff-tag">
+                        <span class="staff-symbol" data-editor-avatar></span>
+                        <div class="editor-staff-info">
+                          <strong data-editor-staff-name></strong>
+                          <small data-editor-staff-role></small>
+                        </div>
+                      </div>
+                      <span class="editor-day-badge" data-editor-day-badge></span>
+                    </div>
+                    <!-- Fast Preset Chips -->
+                    <div class="editor-presets">
+                      <span class="preset-label">Quick Presets:</span>
+                      <div class="preset-chips">
+                        <button
+  type="button"
+  class="preset-chip"
+  data-preset-start="07:00"
+  data-preset-end="15:00"
+>Early 7a–3p</button>
+                        <button
+  type="button"
+  class="preset-chip"
+  data-preset-start="09:00"
+  data-preset-end="17:00"
+>Standard 9a–5p</button>
+                        <button
+  type="button"
+  class="preset-chip"
+  data-preset-start="12:00"
+  data-preset-end="20:00"
+>Mid 12p–8p</button>
+                        <button
+  type="button"
+  class="preset-chip"
+  data-preset-start="14:00"
+  data-preset-end="22:00"
+>Late 2p–10p</button>
+                      </div>
+                    </div>
+                    <form data-roster-editor-form class="editor-active-form">
+                      <input type="hidden" id="roster-editor-staff">
+                      <input type="hidden" id="roster-editor-date">
+                      <!-- Type segmented control -->
+                      <div class="segmented-control" data-type-segmented>
+                        <button type="button" class="segment-btn active" data-type="shift">⏱ Shift</button>
+                        <button type="button" class="segment-btn" data-type="holiday">🌴 Day Off</button>
+                        <button type="button" class="segment-btn" data-type="clear">✕ Clear</button>
+                      </div>
+                      <input type="hidden" id="roster-editor-type" value="shift">
+                      <!-- Time Inputs Section -->
+                      <div class="editor-time-fields" data-editor-time-fields>
+                        <div class="time-field">
+                          <label for="roster-editor-start">Start Time</label>
+                          <input
+                            id="roster-editor-start"
+                            type="time"
+                            value="09:00"
+                            required
+                          >
+                          <span class="time-12h-preview" data-start-12h-preview>9:00 AM</span>
+                        </div>
+                        <div class="time-field-sep">
+                          →
+                        </div>
+                        <div class="time-field">
+                          <label for="roster-editor-end">End Time</label>
+                          <input
+                            id="roster-editor-end"
+                            type="time"
+                            value="17:00"
+                            required
+                          >
+                          <span class="time-12h-preview" data-end-12h-preview>5:00 PM</span>
+                        </div>
+                      </div>
+                      <!-- Live Duration & Shift Badge -->
+                      <div class="shift-live-summary" data-shift-summary>
+                        <span class="summary-hours" data-summary-hours>8.0 hrs</span>
+                        <span class="summary-range" data-summary-range>9:00 AM – 5:00 PM</span>
+                      </div>
+                      <!-- Note input -->
+                      <div class="form-row">
+                        <label for="roster-editor-note">Shift Note (optional)</label>
+                        <input id="roster-editor-note" placeholder="e.g. Front desk lead, Kitchen closing">
+                      </div>
+                      <!-- Form actions -->
+                      <div class="editor-actions">
+                        <button class="button secondary" type="button" data-action="close-roster-editor">Deselect</button>
+                        <button class="button primary" type="submit">Apply Shift</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <!-- Shift Templates Section -->
+                <div class="studio-section studio-templates-card">
+                  <div class="section-title-row">
+                    <h4>Shift Templates</h4>
+                    <span class="template-hint">Drag or click to assign</span>
+                  </div>
+                  <div class="template-list" data-template-list></div>
+                  <details class="new-template-details">
+                    <summary>
+                      + Add New Template
+                    </summary>
+                    <form class="template-form" data-template-form>
+                      <input id="template-name" placeholder="Template title (e.g. Closing)" required>
+                      <div class="template-form-times">
+                        <input
+                          id="template-start"
+                          type="time"
+                          value="09:00"
+                          required
+                        >
+                        <span>to</span>
+                        <input
+                          id="template-end"
+                          type="time"
+                          value="17:00"
+                          required
+                        >
+                      </div>
+                      <button class="button secondary full-width" type="submit">Save Template</button>
+                    </form>
+                  </details>
+                </div>
+                <!-- Delete Zone (Full Panel Overlay during drag) -->
+                <div class="drag-delete-overlay delete-zone hidden" data-roster-delete-zone>
+                  <span class="drag-delete-overlay-icon">🗑️</span>
+                  <span>Drop assignment anywhere here to delete</span>
+                </div>
+              </aside>
+            </div>
+            <section class="cleaning-studio" data-cleaning-studio>
+              <div class="cleaning-studio-main">
+                <div class="cleaning-schedule-section" data-cleaning-grid></div>
+              </div>
+              <aside class="cleaning-editor-panel admin-only hidden" data-cleaning-editor-panel>
+                <div data-cleaning-editor></div>
+                <div class="cleaning-editor-actions">
+                  <button class="button secondary" data-action="save-cleaning-draft">Save Draft</button>
+                  <button class="button primary" data-action="publish-cleaning">Publish</button>
+                </div>
+                <div class="drag-delete-overlay delete-zone hidden" data-cleaning-delete-zone>
+                  <span class="drag-delete-overlay-icon">🗑️</span>
+                  <span>Drop assignment anywhere here to delete</span>
+                </div>
+              </aside>
+            </section>
+          </section>
+        </div>
+        <div class="page hidden" data-view="vendors">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Operations &amp; Finance</p>
+              <h1>Vendors Ledger</h1>
+              <p class="muted">Track supplier bills, payments, balances, and ledger analytics.</p>
+            </div>
+            <button class="button primary admin-only hidden" data-action="vendor-new">+ Add Vendor</button>
+          </div>
+          <div class="vendor-tabs-bar">
+            <div class="vendor-tabs-scroll" data-vendor-tabs></div>
+          </div>
+          <div class="vendor-panel" data-vendor-panel></div>
+        </div>
+        <div class="page hidden" data-view="help">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Support centre</p>
+              <h1>Help Guide</h1>
+              <p class="muted">Simple steps for everyday staff tasks.</p>
+            </div>
+            <button class="button secondary" data-action="copy-guide">Copy guide</button>
+          </div>
+          <section class="help-grid">
+            <article class="help-card">
+              <span class="help-number">01</span>
+              <h2>Start here</h2>
+              <p>
+                Use the sidebar to open Dashboard, Attendance, Roster, Calendar, or Vendors. If you are unsure where to begin, Dashboard gives you a quick overview of today’s activity.
+              </p>
+            </article>
+            <article class="help-card">
+              <span class="help-number">02</span>
+              <h2>Clock in for work</h2>
+              <p>
+                Open Attendance, enter your four-digit PIN, then press Clock in. Keep the page open until the configured attendance time has passed. Your icon will then appear on the Nepali calendar. Use Break when you pause and Clock out when your shift ends.
+              </p>
+              <details>
+                <summary>
+                  My icon is not showing
+                </summary>
+                <p>
+                  Check that you selected Clock in and remain active. The admin chooses whether icons appear instantly, after seconds, or after minutes. Ask an admin if the record needs a manual correction.
+                </p>
+              </details>
+            </article>
+            <article class="help-card">
+              <span class="help-number">03</span>
+              <h2>Read the calendar</h2>
+              <p>
+                The large Nepali number is the main date. The smaller number is the Gregorian reference date. Green staff icons show attendance. Admins can click a date to manually select or clear staff icons when a correction is needed.
+              </p>
+            </article>
+            <article class="help-card">
+              <span class="help-number">04</span>
+              <h2>Use the roster</h2>
+              <p>
+                Open Roster to see weekly assignments. Staff can review the published schedule. Admins can create drafts, add shifts, use templates, move assignments, and publish the finished week.
+              </p>
+            </article>
+            <article class="help-card">
+              <span class="help-number">05</span>
+              <h2>Use the vendor ledger</h2>
+              <p>
+                Open Vendors and choose a vendor tab. Each main row is one bill or invoice. Click a row to expand its products, then edit quantities, rates, discounts, notes, and payments. Use the filter button to find bills and Show chart only when you need the graph.
+              </p>
+            </article>
+            <article class="help-card">
+              <span class="help-number">06</span>
+              <h2>When you need help</h2>
+              <p>
+                Tell an admin which page you were using, what you clicked, and what you expected to happen. Do not share your PIN, password, or private business information in screenshots or support messages.
+              </p>
+            </article>
+          </section>
+          <section class="panel guide-note">
+            <h2>Important for every user</h2>
+            <p>
+              Dashy currently saves information in this browser. Do not clear browser storage or change browser profiles unless an admin has confirmed that important records are backed up.
+            </p>
+          </section>
+        </div>
+        <div class="page hidden" data-view="system-log">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Administrator only</p>
+              <h1>System Log</h1>
+              <p class="muted">Detailed technical handoff for maintainers and future AI assistants.</p>
+            </div>
+            <button class="button secondary" data-action="copy-system-log">Copy technical log</button>
+          </div>
+          <section class="notice warning">
+            <strong>Keep this export private</strong>
+            <span>
+              This page describes permissions, browser data, and implementation details. Never add passwords, PINs, API keys, or private business exports.
+            </span>
+          </section>
+          <section class="panel technical-log" id="technical-log">
+            <h2>Dashy by TNH · maintainer handoff</h2>
+            <h3>1. Runtime and source of truth</h3>
+            <ul>
+              <li>
+                Dashy is a dependency-free Vanilla HTML, CSS, and JavaScript application for Pokhara/Nepal operations.
+              </li>
+              <li>
+                Run locally with
+                <code>
+                  python -m http.server 5500 --bind 127.0.0.1
+                </code>
+                , then open
+                <code>
+                  http://localhost:5500/index.html
+                </code>
+                .
+              </li>
+              <li>
+                <code>
+                  index.html
+                </code>
+                ,
+                <code>
+                  app.js
+                </code>
+                , and the modular files under
+                <code>
+                  css/
+                </code>
+                are development sources.
+                <code>
+                  dashy.html
+                </code>
+                ,
+                <code>
+                  styles.css
+                </code>
+                , and files under
+                <code>
+                  deploy/
+                </code>
+                are generated or synchronized outputs.
+              </li>
+              <li>
+                After source edits, run
+                <code>
+                  python build.py
+                </code>
+                , then
+                <code>
+                  python build.py
+                </code>
+                . The build formats HTML, bundles ten CSS modules, copies JavaScript, and copies SVG assets.
+              </li>
+              <li>
+                Do not introduce React, npm dependencies, a bundler, or a server framework. Preserve the zero-dependency browser prototype unless the project owner explicitly changes that direction.
+              </li>
+            </ul>
+            <h3>2. Attendance data flow</h3>
+            <ul>
+              <li>
+                Staff use the PIN keypad.
+                <code>
+                  updateAttendance("Clocked In")
+                </code>
+                creates a record in
+                <code>
+                  attendanceLog
+                </code>
+                with
+                <code>
+                  staffId
+                </code>
+                , Kathmandu-local Gregorian
+                <code>
+                  date
+                </code>
+                ,
+                <code>
+                  clockInAt
+                </code>
+                , and
+                <code>
+                  qualified: false
+                </code>
+                .
+              </li>
+              <li>
+                The qualification configuration is stored under
+                <code>
+                  dashy-attendance-qualification-v2
+                </code>
+                as
+                <code>
+                  { unit: "instant" | "seconds" | "minutes", value: number }
+                </code>
+                . The default is one minute.
+              </li>
+              <li>
+                <code>
+                  qualifyAttendanceRecords()
+                </code>
+                runs when calendar icons are rendered and every 15 seconds. It compares elapsed milliseconds with the configured threshold and persists qualified records.
+              </li>
+              <li>
+                <code>
+                  calendarAttendanceIcons(date)
+                </code>
+                displays qualified automatic records. A manual admin override for the same staff/date takes precedence, including explicit removal.
+              </li>
+              <li>
+                Manual date selections are stored under
+                <code>
+                  dashy-attendance-overrides-v1
+                </code>
+                . Admin-only controls are client-gated by
+                <code>
+                  isAdmin
+                </code>
+                ; production must enforce authorization server-side.
+              </li>
+              <li>
+                Changing the threshold affects records that are still unqualified. Records already marked qualified remain qualified.
+              </li>
+            </ul>
+            <h3>3. Calendar and locale rules</h3>
+            <ul>
+              <li>
+                The calendar is BS-first and uses verified year data for supported years 2080–2086. Gregorian dates are secondary reference labels.
+              </li>
+              <li>
+                Date conversion uses
+                <code>
+                  Asia/Kathmandu
+                </code>
+                . Do not replace this with the browser’s local timezone.
+              </li>
+              <li>
+                Nepali numerals are produced by
+                <code>
+                  nepaliDigits()
+                </code>
+                . Date cells carry
+                <code>
+                  data-calendar-date
+                </code>
+                for admin editing and use a faint green hover state.
+              </li>
+            </ul>
+            <h3>4. Vendors and retention</h3>
+            <ul>
+              <li>
+                Vendor state is stored under
+                <code>
+                  dashy-vendors-v2
+                </code>
+                . One visible ledger row represents one invoice; product lines are nested in
+                <code>
+                  items[]
+                </code>
+                .
+              </li>
+              <li>
+                Bill items calculate quantity × rate − discount. Bills also support notes, payments, filters, sorting, expandable rows, totals, and a chart below the ledger.
+              </li>
+              <li>
+                Vendor colors are editable and drive the active tab styling. Ledger column widths are resizable without admin access and persist under
+                <code>
+                  dashy-vendor-column-widths-v1
+                </code>
+                .
+              </li>
+              <li>
+                <code>
+                  applyVendorRetention()
+                </code>
+                limits bill history to the latest three months when vendor data is saved.
+              </li>
+            </ul>
+            <h3>5. Staff, roster, and user management</h3>
+            <ul>
+              <li>
+                Staff profiles and live statuses are stored under
+                <code>
+                  dashy-staff-attendance-v3
+                </code>
+                . User Management is the authoritative admin surface for profile name, role, PIN, icon, and account controls.
+              </li>
+              <li>
+                Roster drafts, templates, and published weeks use separate browser-local keys. Keep weekly Sunday–Saturday behavior and existing drag/drop patterns intact.
+              </li>
+              <li>
+                Do not move staff profile editing back into Attendance; the duplicate control was intentionally removed.
+              </li>
+            </ul>
+            <h3>6. Storage and security boundaries</h3>
+            <ul>
+              <li>
+                localStorage is device/browser-local, not a shared database. A different browser profile or cleared site data will not see the same records.
+              </li>
+              <li>
+                sessionStorage holds the current admin session. The client-side admin gate is suitable only for this prototype and is not a production authorization boundary.
+              </li>
+              <li>
+                Never log or export passwords, PINs, secrets, or private ledger contents. Avoid adding sensitive values to toasts, copied guides, or committed source.
+              </li>
+              <li>
+                When changing storage schemas, add a migration or compatibility path. Do not silently discard existing records.
+              </li>
+            </ul>
+            <h3>7. Safe change and verification checklist</h3>
+            <ol>
+              <li>
+                Read
+                <code>
+                  PROJECT_CONTEXT.md
+                </code>
+                and the relevant modular CSS file before editing.
+              </li>
+              <li>
+                Search for existing keys, render functions, event delegation, and build patterns before adding new logic.
+              </li>
+              <li>
+                Make source changes first; regenerate outputs with
+                <code>
+                  python build.py
+                </code>
+                and
+                <code>
+                  python build.py
+                </code>
+                .
+              </li>
+              <li>
+                Run
+                <code>
+                  node --check app.js
+                </code>
+                and
+                <code>
+                  git diff --check
+                </code>
+                .
+              </li>
+              <li>Smoke-test the affected page at port 5500, including admin and signed-out behavior where relevant.</li>
+              <li>
+                Review generated files and
+                <code>
+                  git status --short
+                </code>
+                before committing.
+              </li>
+            </ol>
+            <h3>8. Known prototype limitations</h3>
+            <ul>
+              <li>
+                There is no server-side database, multi-user synchronization, or real authorization layer in this repository.
+              </li>
+              <li>
+                Automatic attendance qualification depends on the browser timer and periodic refresh; manual admin overrides exist for corrections.
+              </li>
+              <li>Supported BS conversion years are bounded. Do not silently guess dates outside the verified tables.</li>
+              <li>Generated deployment files must remain synchronized with development sources before publishing.</li>
+            </ul>
+          </section>
+        </div>
+        <!-- USER MANAGEMENT PAGE (Admin Only) -->
+        <div class="page hidden" data-view="user-management">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Administrator</p>
+              <h1>User Management</h1>
+              <p class="muted">Add, edit, or remove staff and admin accounts.</p>
+            </div>
+            <button class="button primary" data-action="open-add-user">+ Add User</button>
+          </div>
+          <!-- Add / Edit User Modal -->
+          <div class="user-modal hidden" data-user-modal>
+            <div class="user-modal-card">
+              <div class="user-modal-header">
+                <h2 data-user-modal-title>Add New User</h2>
+                <button class="modal-close" data-action="close-user-modal" aria-label="Close">×</button>
+              </div>
+              <form data-user-form>
+                <input type="hidden" id="user-form-id" value="">
+                <div class="user-form-grid">
+                  <label>
+                    Display Name
+                    <input id="user-form-name" placeholder="e.g. Alex Johnson" required>
+                  </label>
+                  <label>
+                    Job Role
+                    <input id="user-form-role" placeholder="e.g. Kitchen" required>
+                  </label>
+                  <label>
+                    4-Digit PIN
+                    <input
+                      id="user-form-pin"
+                      inputmode="numeric"
+                      pattern="[0-9]{4}"
+                      maxlength="4"
+                      placeholder="e.g. 1234"
+                      required
+                    >
+                  </label>
+                  <label>
+                    Account Type
+                    <select id="user-form-type">
+                      <option value="staff">Staff</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </label>
+                  <label>
+                    Profile Icon
+                    <div class="icon-picker user-form-icons" data-user-icon-picker></div>
+                  </label>
+                </div>
+                <p class="form-error hidden" data-user-form-error>PIN is already in use. Choose a different one.</p>
+                <div class="user-form-actions">
+                  <button type="button" class="button secondary" data-action="close-user-modal">Cancel</button>
+                  <button type="submit" class="button primary" data-user-form-submit>Save User</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- Staff List -->
+          <section class="panel user-management-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>All Users</h2>
+                <p class="muted">Tap Edit to modify any account</p>
+              </div>
+              <span class="live-label">
+                <i></i>
+                Live
+              </span>
+            </div>
+            <div class="user-list" data-user-list></div>
+          </section>
+          <!-- Admin Security (Owner Only) -->
+          <section class="panel admin-security-panel admin-only hidden">
+            <div class="panel-heading">
+              <div>
+                <h2>Admin Security</h2>
+                <p class="muted">Change your admin password and set a personal recovery passphrase.</p>
+              </div>
+            </div>
+            <form data-admin-security-form>
+              <div class="security-form-grid">
+                <label>
+                  Current Admin Password
+                  <div class="password-input-wrap">
+                    <input
+                      id="sec-current-pw"
+                      type="password"
+                      placeholder="Enter current password"
+                      required
+                      autocomplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle-btn"
+                      data-password-toggle="sec-current-pw"
+                      aria-label="Toggle password visibility"
+                      title="Show/hide password"
+                    >
+                      <svg
+                        class="eye-icon eye-show"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <svg
+                        class="eye-icon eye-hide hidden"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line
+  x1="1"
+  y1="1"
+  x2="23"
+  y2="23"
+></line>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
+                <label>
+                  New Admin Password
+                  <div class="password-input-wrap">
+                    <input
+                      id="sec-new-pw"
+                      type="password"
+                      placeholder="Leave blank to keep current"
+                      autocomplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle-btn"
+                      data-password-toggle="sec-new-pw"
+                      aria-label="Toggle password visibility"
+                      title="Show/hide password"
+                    >
+                      <svg
+                        class="eye-icon eye-show"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <svg
+                        class="eye-icon eye-hide hidden"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line
+  x1="1"
+  y1="1"
+  x2="23"
+  y2="23"
+></line>
+                      </svg>
+                    </button>
+                  </div>
+                </label>
+                <label>
+                  Personal Recovery Passphrase
+                  <div class="password-input-wrap">
+                    <input
+                      id="sec-recovery-phrase"
+                      type="password"
+                      placeholder="e.g. MySecretPassphrase"
+                      autocomplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle-btn"
+                      data-password-toggle="sec-recovery-phrase"
+                      aria-label="Toggle passphrase visibility"
+                      title="Show/hide passphrase"
+                    >
+                      <svg
+                        class="eye-icon eye-show"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <svg
+                        class="eye-icon eye-hide hidden"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line
+  x1="1"
+  y1="1"
+  x2="23"
+  y2="23"
+></line>
+                      </svg>
+                    </button>
+                  </div>
+                  <small>
+                    Only known to you. If you forget your admin password, you can enter this passphrase to reset it. Staff cannot see or guess this.
+                  </small>
+                </label>
+              </div>
+              <p class="form-error hidden" data-security-error></p>
+              <button class="button primary" type="submit">Save Security Settings</button>
+            </form>
+          </section>
+        </div>
+      </main>
+    </div>
+    <div class="admin-modal hidden" data-admin-modal>
+      <div class="admin-modal-card">
+        <button class="modal-close" data-action="close-admin-login" aria-label="Close admin login">×</button>
+        <div class="attendance-login-icon">
+          ⚿
+        </div>
+        <p class="eyebrow">Owner access</p>
+        <h2>Admin login</h2>
+        <p class="muted">Sign in only when you need to manage staff, rosters, or corrections.</p>
+        <form data-admin-form>
+          <label for="admin-password">Admin password</label>
+          <div class="password-input-wrap">
+            <input
+              id="admin-password"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              data-password-toggle="admin-password"
+              aria-label="Toggle password visibility"
+              title="Show/hide password"
+            >
+              <svg
+                class="eye-icon eye-show"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg
+                class="eye-icon eye-hide hidden"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line
+  x1="1"
+  y1="1"
+  x2="23"
+  y2="23"
+></line>
+              </svg>
+            </button>
+          </div>
+          <p class="form-error hidden" data-admin-error>That password was not accepted.</p>
+          <button class="button primary full-width" type="submit">Unlock admin tools</button>
+        </form>
+        <div class="admin-recovery-section hidden" data-admin-recovery-section>
+          <p class="eyebrow">Password Recovery</p>
+          <p class="muted" style="font-size:11.5px;margin-bottom:10px;text-align:center;">Enter your personal recovery passphrase to set a new admin password.</p>
+          <form data-recovery-form>
+            <label for="recovery-phrase-input">Recovery Passphrase</label>
+            <div class="password-input-wrap">
+              <input
+                id="recovery-phrase-input"
+                type="password"
+                placeholder="Enter your passphrase"
+                required
+                autocomplete="off"
+              />
+              <button
+                type="button"
+                class="password-toggle-btn"
+                data-password-toggle="recovery-phrase-input"
+                aria-label="Toggle passphrase visibility"
+                title="Show/hide passphrase"
+              >
+                <svg
+                  class="eye-icon eye-show"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg
+                  class="eye-icon eye-hide hidden"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line
+  x1="1"
+  y1="1"
+  x2="23"
+  y2="23"
+></line>
+                </svg>
+              </button>
+            </div>
+            <label for="recovery-new-pw" style="margin-top:6px;">New Password</label>
+            <div class="password-input-wrap">
+              <input
+                id="recovery-new-pw"
+                type="password"
+                placeholder="Minimum 4 characters"
+                required
+              />
+              <button
+                type="button"
+                class="password-toggle-btn"
+                data-password-toggle="recovery-new-pw"
+                aria-label="Toggle password visibility"
+                title="Show/hide password"
+              >
+                <svg
+                  class="eye-icon eye-show"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg
+                  class="eye-icon eye-hide hidden"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line
+  x1="1"
+  y1="1"
+  x2="23"
+  y2="23"
+></line>
+                </svg>
+              </button>
+            </div>
+            <label for="recovery-confirm-pw" style="margin-top:6px;">Confirm New Password</label>
+            <div class="password-input-wrap">
+              <input
+                id="recovery-confirm-pw"
+                type="password"
+                placeholder="Re-enter new password"
+                required
+              />
+              <button
+                type="button"
+                class="password-toggle-btn"
+                data-password-toggle="recovery-confirm-pw"
+                aria-label="Toggle password visibility"
+                title="Show/hide password"
+              >
+                <svg
+                  class="eye-icon eye-show"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg
+                  class="eye-icon eye-hide hidden"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line
+  x1="1"
+  y1="1"
+  x2="23"
+  y2="23"
+></line>
+                </svg>
+              </button>
+            </div>
+            <p class="form-error hidden" data-recovery-error></p>
+            <button class="button primary full-width" type="submit" style="margin-top:10px;">Reset Admin Password</button>
+          </form>
+          <button
+  type="button"
+  class="forgot-link"
+  data-action="close-recovery"
+  style="margin-top:8px;"
+>Back to login</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" data-toast role="status"></div>
+    <script>
+      (async function() {
+        try {
+          const response = await fetch('/api/dashy-state');
+          const remoteState = await response.json();
+
+          const originalGetItem = localStorage.getItem.bind(localStorage);
+          const originalSetItem = localStorage.setItem.bind(localStorage);
+          
+          localStorage.getItem = function(key) {
+            if (remoteState.hasOwnProperty(key)) {
+              return typeof remoteState[key] === 'string' ? remoteState[key] : JSON.stringify(remoteState[key]);
+            }
+            return originalGetItem(key);
+          };
+
+          localStorage.setItem = function(key, value) {
+            originalSetItem(key, value);
+            
+            let parsedValue = value;
+            try { parsedValue = JSON.parse(value); } catch(e) {}
+            
+            fetch('/api/dashy-state', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ key, value: parsedValue })
+            });
+          };
+        } catch (e) {
+          console.error("Failed to sync with Supabase backend:", e);
+        }
+
+        const script = document.createElement('script');
+        script.src = '/static/dashy/app.js';
+        document.body.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>
