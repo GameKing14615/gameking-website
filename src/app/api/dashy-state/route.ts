@@ -12,7 +12,7 @@ export async function GET() {
     return NextResponse.json({});
   }
 
-  const state: Record<string, any> = {};
+  const state: Record<string, unknown> = {};
   for (const row of data || []) {
     state[row.key] = row.value;
   }
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 }
