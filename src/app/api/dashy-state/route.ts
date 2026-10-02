@@ -31,7 +31,7 @@ export async function GET() {
 
     // 2. Transform Relational Data -> Vanilla JS State Shape
     if (staffData) {
-      state["dashy-staff-v1"] = staffData.map((s: StaffModel) => ({
+      state["dashy-staff-attendance-v3"] = staffData.map((s: StaffModel) => ({
         id: s.id,
         name: s.full_name,
         pin: s.pin,
@@ -41,7 +41,7 @@ export async function GET() {
     }
 
     if (vendorData && expenseData) {
-      state["dashy-vendors-v1"] = vendorData.map((v: VendorModel) => ({
+      state["dashy-vendors-v2"] = vendorData.map((v: VendorModel) => ({
         id: v.id,
         name: v.name,
         category: v.category || "",
@@ -105,7 +105,7 @@ export async function POST(req: Request) {
 
     // ROUTE TO PROPER DATABASE TABLES BASED ON KEY
     switch (key) {
-      case "dashy-staff-v1":
+      case "dashy-staff-attendance-v3":
         const staffModels: StaffModel[] = value.map((v: any) => ({
           id: String(v.id),
           full_name: v.name,
@@ -115,9 +115,12 @@ export async function POST(req: Request) {
         }));
         const { error: staffErr } = await supabaseAdmin.from("staff").upsert(staffModels);
         if (staffErr) throw staffErr;
+        
+        // Also dump to dashy_state so GET can retrieve it exactly as requested
+        await supabaseAdmin.from("dashy_state").upsert({ key, value, updated_at: new Date().toISOString() });
         break;
 
-      case "dashy-vendors-v1":
+      case "dashy-vendors-v2":
         const vendorModels: VendorModel[] = [];
         const expenseModels: ExpenseModel[] = [];
         value.forEach((v: any) => {
@@ -149,6 +152,9 @@ export async function POST(req: Request) {
           const { error: expErr } = await supabaseAdmin.from("expenses").upsert(expenseModels);
           if (expErr) throw expErr;
         }
+
+        // Also dump to dashy_state
+        await supabaseAdmin.from("dashy_state").upsert({ key, value, updated_at: new Date().toISOString() });
         break;
 
       case "dashy-attendance-log-v1":
