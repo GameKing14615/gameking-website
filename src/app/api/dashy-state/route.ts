@@ -194,7 +194,11 @@ export async function POST(req: Request) {
           }
         }
         if (rosterModels.length > 0) {
-          const { error: rosterErr } = await supabaseAdmin.from("roster_assignments").upsert(rosterModels);
+          // Deduplicate by ID to prevent Postgres 'ON CONFLICT DO UPDATE command cannot affect row a second time' error
+          // which happens if the UI mistakenly sends overlapping shifts for the same staff on the same date.
+          const uniqueRosterModels = Array.from(new Map(rosterModels.map(m => [m.id, m])).values());
+          
+          const { error: rosterErr } = await supabaseAdmin.from("roster_assignments").upsert(uniqueRosterModels);
           if (rosterErr) throw rosterErr;
         }
         
