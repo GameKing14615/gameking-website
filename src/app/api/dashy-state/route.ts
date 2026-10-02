@@ -107,13 +107,14 @@ export async function POST(req: Request) {
     switch (key) {
       case "dashy-staff-v1":
         const staffModels: StaffModel[] = value.map((v: any) => ({
-          id: v.id,
+          id: String(v.id),
           full_name: v.name,
           pin: v.pin,
           role: v.role,
           active: v.active !== false,
         }));
-        await supabaseAdmin.from("staff").upsert(staffModels);
+        const { error: staffErr } = await supabaseAdmin.from("staff").upsert(staffModels);
+        if (staffErr) throw staffErr;
         break;
 
       case "dashy-vendors-v1":
@@ -121,7 +122,7 @@ export async function POST(req: Request) {
         const expenseModels: ExpenseModel[] = [];
         value.forEach((v: any) => {
           vendorModels.push({
-            id: v.id,
+            id: String(v.id),
             name: v.name,
             category: v.category,
             contact_info: v.contact,
@@ -130,8 +131,8 @@ export async function POST(req: Request) {
           if (v.bills) {
             v.bills.forEach((b: any) => {
               expenseModels.push({
-                id: b.id,
-                vendor_id: v.id,
+                id: String(b.id),
+                vendor_id: String(v.id),
                 amount: Number(b.amount) || 0,
                 date: b.date,
                 category: b.category || 'other',
@@ -141,16 +142,19 @@ export async function POST(req: Request) {
             });
           }
         });
-        await supabaseAdmin.from("vendors").upsert(vendorModels);
+        const { error: vendErr } = await supabaseAdmin.from("vendors").upsert(vendorModels);
+        if (vendErr) throw vendErr;
+        
         if (expenseModels.length > 0) {
-          await supabaseAdmin.from("expenses").upsert(expenseModels);
+          const { error: expErr } = await supabaseAdmin.from("expenses").upsert(expenseModels);
+          if (expErr) throw expErr;
         }
         break;
 
       case "dashy-attendance-log-v1":
         const attendanceModels: AttendanceLogModel[] = value.map((a: any) => ({
-          id: a.id,
-          staff_id: a.staffId,
+          id: String(a.id),
+          staff_id: String(a.staffId),
           date: a.date,
           clock_in: a.clockInAt ? new Date(a.clockInAt).toISOString() : null,
           clock_out: a.clockOutAt ? new Date(a.clockOutAt).toISOString() : null,
@@ -160,22 +164,58 @@ export async function POST(req: Request) {
           is_override: false,
           override_present: false,
         }));
-        await supabaseAdmin.from("attendance_logs").upsert(attendanceModels);
+        const { error: attErr } = await supabaseAdmin.from("attendance_logs").upsert(attendanceModels);
+        if (attErr) throw attErr;
         break;
 
-      default:
-        // Any other config keys just save to dashy_state
-        await supabaseAdmin.from("dashy_state").upsert({
+      case "dashy-roster-published-v2":
+      case "dashy-roster-drafts-v1":
+        // value is a dictionary of weekStartDate -> array of shifts
+        const rosterModels: RosterAssignmentModel[] = [];
+        for (const weekStart of Object.keys(value)) {
+          const shifts = value[weekStart];
+          if (Array.isArray(shifts)) {
+            shifts.forEach((s: any) => {
+              rosterModels.push({
+                id: `${s.staffId}-${s.date}`, // Unique predictable ID based on staff and date
+                staff_id: String(s.staffId),
+                date: s.date,
+                shift_type: s.type, // 'shift', 'holiday', etc.
+                custom_start: s.start || null,
+                custom_end: s.end || null,
+              });
+            });
+          }
+        }
+        if (rosterModels.length > 0) {
+          const { error: rosterErr } = await supabaseAdmin.from("roster_assignments").upsert(rosterModels);
+          if (rosterErr) throw rosterErr;
+        }
+        
+        // Also save to dashy_state so the UI can rebuild exactly as it expects (week buckets)
+        const { error: stateRosterErr } = await supabaseAdmin.from("dashy_state").upsert({
           key,
           value,
           updated_at: new Date().toISOString()
         });
+        if (stateRosterErr) throw stateRosterErr;
+        break;
+
+      default:
+        // Any other config keys just save to dashy_state
+        const { error: legacyErr } = await supabaseAdmin.from("dashy_state").upsert({
+          key,
+          value,
+          updated_at: new Date().toISOString()
+        });
+        if (legacyErr) throw legacyErr;
         break;
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("POST Relational Error:", err);
-    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Invalid payload or database permission denied" }, { status: 500 });
   }
 }
+
